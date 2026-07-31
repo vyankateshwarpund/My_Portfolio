@@ -104,6 +104,17 @@ def contact_view(request):
     return render(request, 'contact.html', {'form': form})
 
 
+def test_smtp(request):
+    import socket
+    from django.http import HttpResponse
+    try:
+        s = socket.create_connection(("smtp.gmail.com", 587), timeout=10)
+        s.close()
+        return HttpResponse("✅ SMTP reachable: Connected successfully to smtp.gmail.com:587")
+    except Exception as e:
+        return HttpResponse(f"❌ Connection failed: {e}", status=500)
+
+
 def subscribe_newsletter(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
