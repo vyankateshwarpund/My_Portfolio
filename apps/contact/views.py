@@ -32,18 +32,16 @@ def contact_view(request):
                 # Save to database first (guaranteed persistence)
                 contact_msg = form.save()
 
-                # Dispatch email notification in background thread (non-blocking)
-                try:
-                    from .email_utils import dispatch_contact_emails_async
-                    dispatch_contact_emails_async(
-                        contact_msg_id=contact_msg.id,
-                        name=contact_msg.name,
-                        email=contact_msg.email,
-                        subject=contact_msg.subject,
-                        message=contact_msg.message
-                    )
-                except Exception as email_err:
-                    logger.error(f"Failed to dispatch async email task: {email_err}")
+                # Dispatch email notification synchronously
+                from .email_utils import send_contact_emails_synchronously
+                email_status = send_contact_emails_synchronously(
+                    contact_msg_id=contact_msg.id,
+                    name=contact_msg.name,
+                    email=contact_msg.email,
+                    subject=contact_msg.subject,
+                    message=contact_msg.message
+                )
+                logger.info(f"Email dispatch summary: {email_status}")
 
                 # Return success response
                 if is_ajax:
