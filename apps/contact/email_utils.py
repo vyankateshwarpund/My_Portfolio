@@ -7,19 +7,16 @@ from django.core.mail import send_mail
 logger = logging.getLogger(__name__)
 
 
-def send_email_via_brevo_api(subject, recipient_email, message_body):
-    """
-    Sends email synchronously over HTTPS (Port 443) using Brevo REST API.
-    Recommended for production deployments like Render where SMTP ports are blocked.
-    """
-    api_key = os.getenv('BREVO_API_KEY')
+def send_via_brevo_api(subject, recipient_email, message_body):
+    """Sends email via Brevo REST API over HTTPS (Port 443 - works on Render Free Tier)."""
+    api_key = os.getenv('BREVO_API_KEY') or os.getenv('SENDINBLUE_API_KEY')
     if not api_key:
         return False
 
     url = "https://api.brevo.com/v3/smtp/email"
     headers = {
         "accept": "application/json",
-        "api-key": api_key,
+        "api-key": api_key.strip(),
         "content-type": "application/json"
     }
 
@@ -33,26 +30,63 @@ def send_email_via_brevo_api(subject, recipient_email, message_body):
     }
 
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=5)
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
         if response.status_code in [200, 201, 202]:
-            logger.info(f"✅ Email successfully delivered via Brevo REST API to {recipient_email}")
+            logger.info(f"✅ Email delivered via Brevo HTTPS API to {recipient_email}")
             print(f"✅ Brevo HTTPS API success: delivered to {recipient_email}")
             return True
         else:
-            logger.error(f"❌ Brevo API failed with status {response.status_code}: {response.text}")
+            logger.error(f"❌ Brevo API error {response.status_code}: {response.text}")
             print(f"❌ Brevo API error {response.status_code}: {response.text}")
             return False
     except Exception as e:
-        logger.error(f"❌ Brevo API request exception: {e}")
+        logger.error(f"❌ Brevo API exception: {e}")
         print(f"❌ Brevo API exception: {e}")
+        return False
+
+
+def send_via_resend_api(subject, recipient_email, message_body):
+    """Sends email via Resend REST API over HTTPS (Port 443 - works on Render Free Tier)."""
+    api_key = os.getenv('RESEND_API_KEY')
+    if not api_key:
+        return False
+
+    url = "https://api.resend.com/emails"
+    headers = {
+        "Authorization": f"Bearer {api_key.strip()}",
+        "Content-Type": "application/json"
+    }
+
+    sender_email = os.getenv('RESEND_FROM_EMAIL', 'onboarding@resend.dev')
+
+    payload = {
+        "from": f"Vyankateshwar Portfolio <{sender_email}>",
+        "to": [recipient_email],
+        "subject": subject,
+        "text": message_body
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        if response.status_code in [200, 201, 202]:
+            logger.info(f"✅ Email delivered via Resend HTTPS API to {recipient_email}")
+            print(f"✅ Resend HTTPS API success: delivered to {recipient_email}")
+            return True
+        else:
+            logger.error(f"❌ Resend API error {response.status_code}: {response.text}")
+            print(f"❌ Resend API error {response.status_code}: {response.text}")
+            return False
+    except Exception as e:
+        logger.error(f"❌ Resend API exception: {e}")
+        print(f"❌ Resend API exception: {e}")
         return False
 
 
 def send_contact_emails_synchronously(contact_msg_id, name, email, subject, message):
     """
-    Synchronously dispatches contact notification and auto-reply emails.
-    Uses fail_silently=False and checks send_mail() return value (> 0)
-    to confirm actual acceptance by the mail backend.
+    Production-grade email dispatcher for Render.
+    Attempts HTTPS API providers (Brevo / Resend) first (Port 443),
+    then falls back to Django SMTP with strict fail_silently=False and sent_count verification.
     """
     admin_subject = f"🚀 New Portfolio Message from {name}: {subject}"
     admin_body = (
@@ -76,66 +110,70 @@ def send_contact_emails_synchronously(contact_msg_id, name, email, subject, mess
         f"Email: pundvyankateshwar@gmail.com | Phone: +91 8263986554\n"
     )
 
-    email_status = {
+    admin_recipient = getattr(settings, 'RECIPIENT_EMAIL', 'pundvyankateshwar@gmail.com')
+
+    status_report = {
         'admin_sent': False,
         'user_sent': False,
         'backend_used': 'none',
         'errors': []
     }
 
-    # 1. Prefer Brevo REST API (HTTPS Port 443) if BREVO_API_KEY is configured
-    if os.getenv('BREVO_API_KEY'):
-        email_status['backend_used'] = 'brevo_api'
-        admin_recipient = getattr(settings, 'RECIPIENT_EMAIL', 'pundvyankateshwar@gmail.com')
-        email_status['admin_sent'] = send_email_via_brevo_api(admin_subject, admin_recipient, admin_body)
-        email_status['user_sent'] = send_email_via_brevo_api(user_subject, email, user_body)
-        return email_status
+    # 1. Try Brevo REST API (HTTPS Port 443)
+    if os.getenv('BREVO_API_KEY') or os.getenv('SENDINBLUE_API_KEY'):
+        status_report['backend_used'] = 'brevo_api'
+        status_report['admin_sent'] = send_via_brevo_api(admin_subject, admin_recipient, admin_body)
+        status_report['user_sent'] = send_via_brevo_api(user_subject, email, user_body)
+        return status_report
 
-    # 2. Synchronous Django send_mail with fail_silently=False & return count check
-    email_status['backend_used'] = getattr(settings, 'EMAIL_BACKEND', 'smtp')
+    # 2. Try Resend REST API (HTTPS Port 443)
+    if os.getenv('RESEND_API_KEY'):
+        status_report['backend_used'] = 'resend_api'
+        status_report['admin_sent'] = send_via_resend_api(admin_subject, admin_recipient, admin_body)
+        status_report['user_sent'] = send_via_resend_api(user_subject, email, user_body)
+        return status_report
 
-    # Send admin notification email
+    # 3. Fallback to standard Django SMTP / Console backend
+    status_report['backend_used'] = str(getattr(settings, 'EMAIL_BACKEND', 'smtp'))
+
+    # Send admin notification
     try:
-        sent_count = send_mail(
+        sent = send_mail(
             subject=admin_subject,
             message=admin_body,
             from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'pundvyankateshwar@gmail.com'),
-            recipient_list=[getattr(settings, 'RECIPIENT_EMAIL', 'pundvyankateshwar@gmail.com')],
+            recipient_list=[admin_recipient],
             fail_silently=False,
         )
-        if sent_count > 0:
-            email_status['admin_sent'] = True
-            logger.info(f"✅ Admin email accepted by backend for message ID {contact_msg_id}")
-            print(f"✅ Admin email accepted (count: {sent_count})")
+        if sent > 0:
+            status_report['admin_sent'] = True
+            logger.info(f"✅ Admin email delivered (count={sent})")
         else:
-            email_status['errors'].append("Admin email returned sent_count = 0")
-            logger.warning(f"⚠️ Admin email sent_count = 0 for message ID {contact_msg_id}")
+            status_report['errors'].append("Admin send_mail returned 0 sent count")
     except Exception as e:
-        error_msg = f"Admin send_mail failed: {str(e)}"
-        email_status['errors'].append(error_msg)
-        logger.error(f"❌ {error_msg}")
-        print(f"❌ {error_msg}")
+        err_msg = f"Admin SMTP send_mail failed: {e}"
+        status_report['errors'].append(err_msg)
+        logger.error(f"❌ {err_msg}")
+        print(f"❌ {err_msg}")
 
-    # Send auto-reply email to sender
+    # Send user auto-reply
     try:
-        sent_count = send_mail(
+        sent = send_mail(
             subject=user_subject,
             message=user_body,
             from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'pundvyankateshwar@gmail.com'),
             recipient_list=[email],
             fail_silently=False,
         )
-        if sent_count > 0:
-            email_status['user_sent'] = True
-            logger.info(f"✅ User auto-reply email accepted by backend for {email}")
-            print(f"✅ User auto-reply accepted (count: {sent_count})")
+        if sent > 0:
+            status_report['user_sent'] = True
+            logger.info(f"✅ User auto-reply delivered (count={sent})")
         else:
-            email_status['errors'].append("User auto-reply returned sent_count = 0")
-            logger.warning(f"⚠️ User auto-reply sent_count = 0 for {email}")
+            status_report['errors'].append("User auto-reply returned 0 sent count")
     except Exception as e:
-        error_msg = f"User auto-reply send_mail failed: {str(e)}"
-        email_status['errors'].append(error_msg)
-        logger.error(f"❌ {error_msg}")
-        print(f"❌ {error_msg}")
+        err_msg = f"User auto-reply SMTP send_mail failed: {e}"
+        status_report['errors'].append(err_msg)
+        logger.error(f"❌ {err_msg}")
+        print(f"❌ {err_msg}")
 
-    return email_status
+    return status_report
