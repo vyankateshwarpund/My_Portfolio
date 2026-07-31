@@ -31,6 +31,14 @@ def contact_view(request):
                 messages.error(request, 'Server error. Please try again.')
                 return render(request, 'contact.html', {'form': form})
 
+            # Print debug info to Render logs
+            print("--- SMTP DEBUG INFO ---")
+            print("HOST:", getattr(settings, 'EMAIL_HOST', None))
+            print("PORT:", getattr(settings, 'EMAIL_PORT', None))
+            print("USER:", getattr(settings, 'EMAIL_HOST_USER', None))
+            print("PASSWORD LENGTH:", len(getattr(settings, 'EMAIL_HOST_PASSWORD', '') or ''))
+            print("-----------------------")
+
             # Send notification email to portfolio owner
             try:
                 send_mail(
@@ -45,7 +53,7 @@ def contact_view(request):
                     ),
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[settings.RECIPIENT_EMAIL],
-                    fail_silently=True,
+                    fail_silently=False,
                 )
                 send_mail(
                     subject="Thank you for contacting Vyankateshwar Santosh Pund!",
@@ -58,11 +66,12 @@ def contact_view(request):
                     ),
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[contact_msg.email],
-                    fail_silently=True,
+                    fail_silently=False,
                 )
                 logger.info(f"Contact emails sent for: {contact_msg.email}")
             except Exception as e:
                 logger.error(f"SMTP error (message already saved): {e}")
+                print(f"EXACT SMTP ERROR: {e}")
 
             # Return success — message is saved regardless of email
             if is_ajax:
