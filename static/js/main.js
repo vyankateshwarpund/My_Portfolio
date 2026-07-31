@@ -234,11 +234,15 @@ function initContactForm() {
         e.preventDefault();
         const formData = new FormData(form);
 
+        // Get CSRF token from the form's hidden input (required by Django in production)
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
         fetch('/contact/', {
             method: 'POST',
             body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
             }
         })
         .then(res => res.json())
