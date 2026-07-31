@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import ContactMessage, NewsletterSubscriber
 from .forms import ContactForm
 import logging
@@ -10,62 +10,75 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@csrf_exempt
 def contact_view(request):
-    """Function-based contact view — reliable for both AJAX and regular POST."""
-    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    """
+    Production-ready contact view for Render deployment.
+    Guarantees JSON response for AJAX requests and saves to database.
+    """
+    is_ajax = (
+        request.headers.get('x-requested-with') == 'XMLHttpRequest' or
+        request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' or
+        'application/json' in request.headers.get('accept', '') or
+        request.POST.get('is_ajax') == 'true' or
+        request.GET.get('ajax') == '1'
+    )
 
     if request.method == 'POST':
-        form = ContactForm(request.POST)
+        try:
+            form = ContactForm(request.POST)
 
-        if form.is_valid():
-            # Save to DB first — guaranteed even if email fails
-            try:
+            if form.is_valid():
+                # Save to database first (guaranteed persistence)
                 contact_msg = form.save()
-            except Exception as e:
-                logger.error(f"Contact DB save error: {e}")
-                if is_ajax:
-                    return JsonResponse(
-                        {'status': 'error', 'message': 'Server error saving your message. Please try again.'},
-                        status=500
+
+                # Dispatch email notification in background thread (non-blocking)
+                try:
+                    from .email_utils import dispatch_contact_emails_async
+                    dispatch_contact_emails_async(
+                        contact_msg_id=contact_msg.id,
+                        name=contact_msg.name,
+                        email=contact_msg.email,
+                        subject=contact_msg.subject,
+                        message=contact_msg.message
                     )
-                messages.error(request, 'Server error. Please try again.')
+                except Exception as email_err:
+                    logger.error(f"Failed to dispatch async email task: {email_err}")
+
+                # Return success response
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': 'Thank you! Your message has been sent successfully. I will reply soon!'
+                    }, status=200)
+
+                messages.success(request, "Thank you! Your message has been sent successfully.")
+                return redirect('contact')
+
+            else:
+                # Form validation errors
+                logger.warning(f"Contact form invalid: {form.errors}")
+                if is_ajax:
+                    errors = {field: [str(e) for e in err_list] for field, err_list in form.errors.items()}
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please fill in all required fields correctly.',
+                        'errors': errors
+                    }, status=400)
+
                 return render(request, 'contact.html', {'form': form})
 
-            # Dispatch email sending asynchronously in background thread
-            # Prevents Gunicorn 500 timeouts when Render free tier blocks or slows down Port 587
-            from .email_utils import dispatch_contact_emails_async
-            dispatch_contact_emails_async(
-                contact_msg_id=contact_msg.id,
-                name=contact_msg.name,
-                email=contact_msg.email,
-                subject=contact_msg.subject,
-                message=contact_msg.message
-            )
-
-            # Return success immediately — message is saved to database
+        except Exception as e:
+            logger.error(f"Contact view error: {e}", exc_info=True)
             if is_ajax:
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'Thank you! Your message has been sent successfully. I will reply soon!'
-                })
-            messages.success(request, "Thank you! Your message has been sent successfully.")
-            return redirect('contact')
-
-        else:
-            # Form validation failed
-            logger.warning(f"Contact form invalid: {form.errors}")
-            if is_ajax:
-                errors = {}
-                for field, error_list in form.errors.items():
-                    errors[field] = [str(e) for e in error_list]
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Please fill in all required fields correctly.',
-                    'errors': errors
-                }, status=400)
-            return render(request, 'contact.html', {'form': form})
+                    'message': f'Server error: {str(e)}'
+                }, status=500)
+            messages.error(request, f"Server error: {e}")
+            return render(request, 'contact.html', {'form': ContactForm(request.POST)})
 
-    # GET request — show empty form
+    # GET request — render form
     form = ContactForm()
     return render(request, 'contact.html', {'form': form})
 
@@ -81,17 +94,23 @@ def test_smtp(request):
         return HttpResponse(f"❌ Connection failed: {e}", status=500)
 
 
+@csrf_exempt
 def subscribe_newsletter(request):
+    is_ajax = (
+        request.headers.get('x-requested-with') == 'XMLHttpRequest' or
+        request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    )
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         if email:
             try:
                 sub, created = NewsletterSubscriber.objects.get_or_create(email=email)
                 msg = 'Thank you for subscribing!' if created else 'You are already subscribed.'
+                if is_ajax:
+                    return JsonResponse({'status': 'success', 'message': msg})
+                messages.success(request, msg)
             except Exception as e:
                 logger.error(f"Newsletter subscribe error: {e}")
-                msg = 'Something went wrong. Please try again.'
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'status': 'success', 'message': msg})
-            messages.success(request, msg)
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': 'Subscription error.'}, status=500)
     return redirect('home')

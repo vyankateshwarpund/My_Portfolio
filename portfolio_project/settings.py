@@ -21,13 +21,19 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 # --- CSRF & HTTPS Settings for Render Deployment ---
-# Django 4.0+ requires CSRF_TRUSTED_ORIGINS for HTTPS POST requests.
-# Render serves all apps over HTTPS - without this, every form POST returns 403.
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
+    'https://*.render.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
+
+# Dynamically add Render's external service URL if available
+render_external_url = os.getenv('RENDER_EXTERNAL_URL')
+if render_external_url:
+    if not render_external_url.startswith('http'):
+        render_external_url = f'https://{render_external_url}'
+    CSRF_TRUSTED_ORIGINS.append(render_external_url)
 
 # Tell Django it's behind Render's HTTPS reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

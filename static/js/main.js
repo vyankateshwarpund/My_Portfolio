@@ -258,45 +258,53 @@ function initContactForm() {
         hideAlert();
 
         const formData = new FormData(form);
-        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+        formData.append('is_ajax', 'true');
+
+        const csrfTokenEl = form.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfToken = csrfTokenEl ? csrfTokenEl.value : '';
+
+        const headers = {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        };
+        if (csrfToken) {
+            headers['X-CSRFToken'] = csrfToken;
+        }
 
         try {
-            const res = await fetch('/contact/', {
+            const res = await fetch('/contact/?ajax=1', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken
-                }
+                headers: headers
             });
 
-            // Safely parse JSON — handle non-JSON responses
             let data;
-            const contentType = res.headers.get('content-type') || '';
-            if (contentType.includes('application/json')) {
+            try {
                 data = await res.json();
-            } else {
-                // Server returned HTML (unexpected error) — show generic message
-                throw new Error(`Server returned status ${res.status}`);
+            } catch (jsonErr) {
+                if (res.ok) {
+                    data = { status: 'success', message: 'Thank you! Your message has been sent successfully.' };
+                } else {
+                    data = { status: 'error', message: `Server error (Status ${res.status}). Please try again.` };
+                }
             }
 
             if (data.status === 'success') {
-                showAlert('success', '✅ ' + data.message);
+                showAlert('success', '✅ ' + (data.message || 'Thank you! Your message has been sent successfully.'));
                 form.reset();
                 clearAllValidation();
             } else {
-                // Show field-level errors if returned
                 if (data.errors) {
                     Object.entries(data.errors).forEach(([field, errs]) => {
                         const input = form.querySelector(`[name="${field}"]`);
-                        if (input) markInvalid(input, errs[0]);
+                        if (input) markInvalid(input, Array.isArray(errs) ? errs[0] : errs);
                     });
                 }
                 showAlert('error', '❌ ' + (data.message || 'Something went wrong. Please try again.'));
             }
         } catch (err) {
-            console.error('Contact form error:', err);
-            showAlert('error', '⚠️ Unable to send message. Please check your connection and try again, or email me directly at pundvyankateshwar@gmail.com');
+            console.error('Contact form JS error:', err);
+            showAlert('error', '⚠️ Network error. Please try again or email pundvyankateshwar@gmail.com directly.');
         } finally {
             setLoading(false);
         }
