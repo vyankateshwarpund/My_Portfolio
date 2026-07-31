@@ -223,50 +223,156 @@ function initCountUp() {
     counters.forEach(counter => observer.observe(counter));
 }
 
-// Contact Form AJAX Handler
+// Contact Form AJAX Handler — Full UX with validation, loading state & feedback
 function initContactForm() {
     const form = document.getElementById('contact-form');
     if (!form) return;
 
     const alertBox = document.getElementById('contact-alert');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnHTML = submitBtn ? submitBtn.innerHTML : 'Send Message';
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-
-        // Get CSRF token from the form's hidden input (required by Django in production)
-        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        fetch('/contact/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (alertBox) {
-                alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
-                if (data.status === 'success') {
-                    alertBox.classList.add('alert', 'alert-success');
-                    alertBox.textContent = data.message;
-                    form.reset();
-                } else {
-                    alertBox.classList.add('alert', 'alert-danger');
-                    alertBox.textContent = data.message || 'An error occurred. Please try again.';
-                }
-            }
-        })
-        .catch(err => {
-            if (alertBox) {
-                alertBox.classList.remove('d-none');
-                alertBox.classList.add('alert', 'alert-danger');
-                alertBox.textContent = 'Connection error. Please try again.';
-            }
+    // Real-time validation on blur
+    form.querySelectorAll('input, textarea').forEach(field => {
+        field.addEventListener('blur', () => validateField(field));
+        field.addEventListener('input', () => {
+            if (field.classList.contains('is-invalid')) validateField(field);
         });
     });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Validate all fields before submitting
+        let isValid = true;
+        form.querySelectorAll('input[required], textarea[required]').forEach(field => {
+            if (!validateField(field)) isValid = false;
+        });
+        if (!isValid) {
+            showAlert('error', '⚠️ Please fill in all required fields correctly.');
+            return;
+        }
+
+        // Show loading state
+        setLoading(true);
+        hideAlert();
+
+        const formData = new FormData(form);
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        try {
+            const res = await fetch('/contact/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                }
+            });
+
+            // Safely parse JSON — handle non-JSON responses
+            let data;
+            const contentType = res.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                // Server returned HTML (unexpected error) — show generic message
+                throw new Error(`Server returned status ${res.status}`);
+            }
+
+            if (data.status === 'success') {
+                showAlert('success', '✅ ' + data.message);
+                form.reset();
+                clearAllValidation();
+            } else {
+                // Show field-level errors if returned
+                if (data.errors) {
+                    Object.entries(data.errors).forEach(([field, errs]) => {
+                        const input = form.querySelector(`[name="${field}"]`);
+                        if (input) markInvalid(input, errs[0]);
+                    });
+                }
+                showAlert('error', '❌ ' + (data.message || 'Something went wrong. Please try again.'));
+            }
+        } catch (err) {
+            console.error('Contact form error:', err);
+            showAlert('error', '⚠️ Unable to send message. Please check your connection and try again, or email me directly at pundvyankateshwar@gmail.com');
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    // --- Helpers ---
+
+    function validateField(field) {
+        const value = field.value.trim();
+        if (!value) {
+            markInvalid(field, `${getFieldLabel(field)} is required.`);
+            return false;
+        }
+        if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            markInvalid(field, 'Please enter a valid email address.');
+            return false;
+        }
+        markValid(field);
+        return true;
+    }
+
+    function getFieldLabel(field) {
+        const label = form.querySelector(`label[for="${field.id}"]`);
+        if (label) return label.textContent.replace('*', '').trim();
+        const name = field.getAttribute('name') || '';
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    function markInvalid(field, message) {
+        field.classList.remove('is-valid');
+        field.classList.add('is-invalid');
+        let feedback = field.nextElementSibling;
+        if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+            feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            field.parentNode.insertBefore(feedback, field.nextSibling);
+        }
+        feedback.textContent = message;
+    }
+
+    function markValid(field) {
+        field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
+        const feedback = field.nextElementSibling;
+        if (feedback && feedback.classList.contains('invalid-feedback')) {
+            feedback.textContent = '';
+        }
+    }
+
+    function clearAllValidation() {
+        form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
+            el.classList.remove('is-valid', 'is-invalid');
+        });
+        form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+    }
+
+    function setLoading(loading) {
+        if (!submitBtn) return;
+        submitBtn.disabled = loading;
+        submitBtn.innerHTML = loading
+            ? '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Sending...'
+            : originalBtnHTML;
+    }
+
+    function showAlert(type, message) {
+        if (!alertBox) return;
+        alertBox.className = `alert alert-${type === 'success' ? 'success' : 'danger'} mb-4`;
+        alertBox.textContent = message;
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideAlert() {
+        if (!alertBox) return;
+        alertBox.className = 'd-none mb-4';
+        alertBox.textContent = '';
+    }
 }
 
 // Project Like AJAX Handler

@@ -10,29 +10,58 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class ContactView(FormView):
     template_name = 'contact.html'
     form_class = ContactForm
     success_url = '/contact/'
 
+    def form_invalid(self, form):
+        """Return JSON error for AJAX requests instead of re-rendering HTML."""
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            errors = {field: list(errs) for field, errs in form.errors.items()}
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Please fill in all required fields correctly.',
+                'errors': errors
+            }, status=400)
+        return super().form_invalid(form)
+
     def form_valid(self, form):
-        contact_msg = form.save()
-        
-        # 1. Send Email Notification to Vyankateshwar (Recipient)
-        admin_subject = f"🚀 New Portfolio Message from {contact_msg.name}: {contact_msg.subject}"
+        # Save message to DB first — guaranteed even if email fails
+        try:
+            contact_msg = form.save()
+        except Exception as e:
+            logger.error(f"DB save error: {e}")
+            if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Server error. Please try again later.'
+                }, status=500)
+            messages.error(self.request, 'Server error. Please try again.')
+            return self.form_invalid(form)
+
+        # Build email bodies
+        admin_subject = f"New Portfolio Message from {contact_msg.name}: {contact_msg.subject}"
         admin_body = (
             f"You received a new message on your portfolio website:\n\n"
             f"Sender Name: {contact_msg.name}\n"
             f"Sender Email: {contact_msg.email}\n"
             f"Subject: {contact_msg.subject}\n\n"
-            f"Message Content:\n{contact_msg.message}\n\n"
-            f"--------------------------------------------------\n"
-            f"Sent via Vyankateshwar Pund Portfolio Website"
+            f"Message:\n{contact_msg.message}\n\n"
+            f"--\nSent via Vyankateshwar Pund Portfolio Website"
         )
-        
-        # Send email notifications (both fail silently — message is already saved to DB)
+        user_body = (
+            f"Hi {contact_msg.name},\n\n"
+            f"Thank you for reaching out! I received your message about '{contact_msg.subject}'.\n\n"
+            f"I will respond as soon as possible.\n\n"
+            f"Best regards,\nVyankateshwar Santosh Pund\n"
+            f"Python & Django Developer\n"
+            f"Email: pundvyankateshwar@gmail.com"
+        )
+
+        # Send emails — fail silently, message is already saved to DB
         try:
-            # 1. Notify Vyankateshwar about the new message
             send_mail(
                 subject=admin_subject,
                 message=admin_body,
@@ -40,46 +69,34 @@ class ContactView(FormView):
                 recipient_list=[settings.RECIPIENT_EMAIL],
                 fail_silently=True,
             )
-
-            # 2. Auto-reply confirmation to the sender
-            user_subject = "Thank you for contacting Vyankateshwar Santosh Pund!"
-            user_body = (
-                f"Hi {contact_msg.name},\n\n"
-                f"Thank you for reaching out through my portfolio website! I have received your message regarding '{contact_msg.subject}'.\n\n"
-                f"I will review your inquiry and respond as soon as possible.\n\n"
-                f"Best regards,\n"
-                f"Vyankateshwar Santosh Pund\n"
-                f"Junior Software Engineer | Python & Django Developer\n"
-                f"Email: pundvyankateshwar@gmail.com | Phone: +91 8263986554\n"
-            )
             send_mail(
-                subject=user_subject,
+                subject="Thank you for contacting Vyankateshwar Santosh Pund!",
                 message=user_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[contact_msg.email],
                 fail_silently=True,
             )
-            logger.info(f"Contact emails sent successfully for: {contact_msg.email}")
+            logger.info(f"Contact emails sent for: {contact_msg.email}")
         except Exception as e:
-            # Email failed but message is saved — don't crash the page
-            logger.error(f"SMTP Email Error (message still saved): {e}")
+            logger.error(f"SMTP Email Error (message already saved to DB): {e}")
 
-        # Always return success — contact message is saved to DB regardless of email status
+        # Always return success — message is saved to DB regardless of email status
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'status': 'success', 'message': 'Thank you! Your message has been sent successfully.'})
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Thank you! Your message has been sent successfully. I will reply soon!'
+            })
 
         messages.success(self.request, "Thank you! Your message has been sent successfully.")
         return super().form_valid(form)
+
 
 def subscribe_newsletter(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         if email:
             sub, created = NewsletterSubscriber.objects.get_or_create(email=email)
-            if created:
-                msg = 'Thank you for subscribing to my newsletter!'
-            else:
-                msg = 'You are already subscribed to the newsletter.'
+            msg = 'Thank you for subscribing!' if created else 'You are already subscribed.'
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'status': 'success', 'message': msg})
             messages.success(request, msg)
