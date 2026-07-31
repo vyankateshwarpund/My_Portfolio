@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def send_via_brevo_api(subject, recipient_email, message_body):
-    """Sends email via Brevo REST API over HTTPS (Port 443 - works on Render Free Tier)."""
+    """Sends email via Brevo REST API over HTTPS (Port 443)."""
     api_key = os.getenv('BREVO_API_KEY') or os.getenv('SENDINBLUE_API_KEY')
     if not api_key:
         return False
@@ -32,7 +32,7 @@ def send_via_brevo_api(subject, recipient_email, message_body):
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         if response.status_code in [200, 201, 202]:
-            logger.info(f"✅ Email delivered via Brevo HTTPS API to {recipient_email}")
+            logger.info(f"✅ Brevo API success: delivered to {recipient_email}")
             print(f"✅ Brevo HTTPS API success: delivered to {recipient_email}")
             return True
         else:
@@ -46,7 +46,7 @@ def send_via_brevo_api(subject, recipient_email, message_body):
 
 
 def send_via_resend_api(subject, recipient_email, message_body):
-    """Sends email via Resend REST API over HTTPS (Port 443 - works on Render Free Tier)."""
+    """Sends email via Resend REST API over HTTPS (Port 443)."""
     api_key = os.getenv('RESEND_API_KEY')
     if not api_key:
         return False
@@ -69,7 +69,7 @@ def send_via_resend_api(subject, recipient_email, message_body):
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         if response.status_code in [200, 201, 202]:
-            logger.info(f"✅ Email delivered via Resend HTTPS API to {recipient_email}")
+            logger.info(f"✅ Resend API success: delivered to {recipient_email}")
             print(f"✅ Resend HTTPS API success: delivered to {recipient_email}")
             return True
         else:
@@ -82,10 +82,44 @@ def send_via_resend_api(subject, recipient_email, message_body):
         return False
 
 
+def send_via_formspree(name, email, subject, message):
+    """Sends notification via Formspree HTTP endpoint over Port 443."""
+    endpoint = os.getenv('FORMSPREE_URL') or os.getenv('FORMSPREE_ENDPOINT')
+    if not endpoint:
+        formspree_id = os.getenv('FORMSPREE_ID')
+        if formspree_id:
+            endpoint = f"https://formspree.io/f/{formspree_id}"
+
+    if not endpoint:
+        return False
+
+    payload = {
+        "name": name,
+        "email": email,
+        "subject": subject,
+        "message": message
+    }
+
+    try:
+        response = requests.post(endpoint, json=payload, headers={"Accept": "application/json"}, timeout=10)
+        if response.status_code in [200, 201, 202]:
+            logger.info(f"✅ Formspree HTTP success for message from {email}")
+            print(f"✅ Formspree HTTP success for message from {email}")
+            return True
+        else:
+            logger.error(f"❌ Formspree error {response.status_code}: {response.text}")
+            print(f"❌ Formspree error {response.status_code}: {response.text}")
+            return False
+    except Exception as e:
+        logger.error(f"❌ Formspree exception: {e}")
+        print(f"❌ Formspree exception: {e}")
+        return False
+
+
 def send_contact_emails_synchronously(contact_msg_id, name, email, subject, message):
     """
     Production-grade email dispatcher for Render.
-    Attempts HTTPS API providers (Brevo / Resend) first (Port 443),
+    Attempts HTTPS API providers (Resend / Brevo / Formspree) over Port 443 first,
     then falls back to Django SMTP with strict fail_silently=False and sent_count verification.
     """
     admin_subject = f"🚀 New Portfolio Message from {name}: {subject}"
@@ -119,21 +153,31 @@ def send_contact_emails_synchronously(contact_msg_id, name, email, subject, mess
         'errors': []
     }
 
-    # 1. Try Brevo REST API (HTTPS Port 443)
-    if os.getenv('BREVO_API_KEY') or os.getenv('SENDINBLUE_API_KEY'):
-        status_report['backend_used'] = 'brevo_api'
-        status_report['admin_sent'] = send_via_brevo_api(admin_subject, admin_recipient, admin_body)
-        status_report['user_sent'] = send_via_brevo_api(user_subject, email, user_body)
-        return status_report
-
-    # 2. Try Resend REST API (HTTPS Port 443)
+    # 1. Try Resend REST API (HTTPS Port 443)
     if os.getenv('RESEND_API_KEY'):
         status_report['backend_used'] = 'resend_api'
         status_report['admin_sent'] = send_via_resend_api(admin_subject, admin_recipient, admin_body)
         status_report['user_sent'] = send_via_resend_api(user_subject, email, user_body)
-        return status_report
+        if status_report['admin_sent'] or status_report['user_sent']:
+            return status_report
 
-    # 3. Fallback to standard Django SMTP / Console backend
+    # 2. Try Brevo REST API (HTTPS Port 443)
+    if os.getenv('BREVO_API_KEY') or os.getenv('SENDINBLUE_API_KEY'):
+        status_report['backend_used'] = 'brevo_api'
+        status_report['admin_sent'] = send_via_brevo_api(admin_subject, admin_recipient, admin_body)
+        status_report['user_sent'] = send_via_brevo_api(user_subject, email, user_body)
+        if status_report['admin_sent'] or status_report['user_sent']:
+            return status_report
+
+    # 3. Try Formspree HTTP Relay (HTTPS Port 443)
+    if os.getenv('FORMSPREE_URL') or os.getenv('FORMSPREE_ID'):
+        status_report['backend_used'] = 'formspree'
+        sent_fs = send_via_formspree(name, email, subject, message)
+        status_report['admin_sent'] = sent_fs
+        if sent_fs:
+            return status_report
+
+    # 4. Fallback to standard Django SMTP / Console backend
     status_report['backend_used'] = str(getattr(settings, 'EMAIL_BACKEND', 'smtp'))
 
     # Send admin notification
@@ -147,7 +191,7 @@ def send_contact_emails_synchronously(contact_msg_id, name, email, subject, mess
         )
         if sent > 0:
             status_report['admin_sent'] = True
-            logger.info(f"✅ Admin email delivered (count={sent})")
+            logger.info(f"✅ Admin SMTP email delivered (count={sent})")
         else:
             status_report['errors'].append("Admin send_mail returned 0 sent count")
     except Exception as e:
@@ -167,7 +211,7 @@ def send_contact_emails_synchronously(contact_msg_id, name, email, subject, mess
         )
         if sent > 0:
             status_report['user_sent'] = True
-            logger.info(f"✅ User auto-reply delivered (count={sent})")
+            logger.info(f"✅ User auto-reply SMTP delivered (count={sent})")
         else:
             status_report['errors'].append("User auto-reply returned 0 sent count")
     except Exception as e:
