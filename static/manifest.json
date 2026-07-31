@@ -1,0 +1,21 @@
+{
+  "name": "Vyankateshwar Pund - Software Engineer Portfolio",
+  "short_name": "VP Portfolio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#6366f1",
+  "description": "Portfolio of Vyankateshwar Santosh Pund - Junior Software Engineer & Python Django Developer",
+  "icons": [
+    {
+      "src": "/static/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

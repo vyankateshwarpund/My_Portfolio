@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Results for "{{ query }}" | Vyankateshwar Pund{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <h2 class="fw-bold text-white mb-4">Search Results for "<span class="gradient-text">{{ query }}</span>"</h2>
+
+        <!-- Projects Results -->
+        <h4 class="text-primary fw-bold mb-3"><i class="bi bi-code-square me-2"></i>Projects ({{ project_results|length }})</h4>
+        <div class="row g-4 mb-5">
+            {% for project in project_results %}
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <h5 class="fw-bold text-white mb-2"><a href="{% url 'project_detail' slug=project.slug %}" class="text-white text-decoration-none">{{ project.title }}</a></h5>
+                    <p class="text-muted small mb-0">{{ project.short_description }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted small">No matching projects found.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Blog Results -->
+        <h4 class="text-info fw-bold mb-3"><i class="bi bi-journal-text me-2"></i>Articles ({{ blog_results|length }})</h4>
+        <div class="row g-4 mb-5">
+            {% for blog in blog_results %}
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <h5 class="fw-bold text-white mb-2"><a href="{% url 'blog_detail' slug=blog.slug %}" class="text-white text-decoration-none">{{ blog.title }}</a></h5>
+                    <p class="text-muted small mb-0">{{ blog.excerpt }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted small">No matching blog posts found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Recruiter & Admin Analytics Dashboard | Vyankateshwar Pund{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
+            <div>
+                <span class="badge bg-success bg-opacity-25 text-success px-3 py-1 rounded-pill mb-2">Live System Dashboard</span>
+                <h2 class="fw-bold text-white mb-0">Portfolio Analytics & Metrics</h2>
+                <p class="text-muted small mb-0">Real-time visitor counts, project views, and contact message inquiries.</p>
+            </div>
+            <a href="/admin/" target="_blank" class="btn btn-gradient">
+                <i class="bi bi-shield-lock me-2"></i> Django Admin Panel
+            </a>
+        </div>
+
+        <!-- Metrics Cards Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3 col-6">
+                <div class="glass-card text-center p-3">
+                    <div class="fs-1 text-primary mb-1"><i class="bi bi-eye-fill"></i></div>
+                    <h3 class="fw-bold text-white mb-0">{{ total_visitors }}</h3>
+                    <span class="text-muted extra-small">Total Page Views</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="glass-card text-center p-3">
+                    <div class="fs-1 text-info mb-1"><i class="bi bi-people-fill"></i></div>
+                    <h3 class="fw-bold text-white mb-0">{{ unique_ips }}</h3>
+                    <span class="text-muted extra-small">Unique IP Visitors</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="glass-card text-center p-3">
+                    <div class="fs-1 text-warning mb-1"><i class="bi bi-folder-fill"></i></div>
+                    <h3 class="fw-bold text-white mb-0">{{ total_projects }}</h3>
+                    <span class="text-muted extra-small">Projects Showcase</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="glass-card text-center p-3">
+                    <div class="fs-1 text-danger mb-1"><i class="bi bi-envelope-fill"></i></div>
+                    <h3 class="fw-bold text-white mb-0">{{ unread_messages_count }}</h3>
+                    <span class="text-muted extra-small">Unread Inquiries</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-8">
+                <div class="glass-card p-4">
+                    <h5 class="fw-bold text-white mb-3"><i class="bi bi-graph-up-arrow text-primary me-2"></i>Visitor Traffic (Last 7 Days)</h5>
+                    <div style="height: 300px;">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold text-white mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Most Viewed Projects</h5>
+                    <div class="d-flex flex-column gap-3">
+                        {% for proj in top_projects %}
+                        <div class="d-flex align-items-center justify-content-between p-2 rounded glass-card bg-secondary bg-opacity-10">
+                            <span class="text-white small text-truncate" style="max-width: 180px;">{{ proj.title }}</span>
+                            <span class="badge bg-primary bg-opacity-25 text-primary"><i class="bi bi-eye me-1"></i>{{ proj.views_count }}</span>
+                        </div>
+                        {% empty %}
+                        <span class="text-muted small">No project views recorded yet.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Messages Inbox Overview -->
+        <div class="glass-card p-4">
+            <h5 class="fw-bold text-white mb-3"><i class="bi bi-inbox-fill text-info me-2"></i>Recent Contact Inquiries</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover bg-transparent text-white small">
+                    <thead>
+                        <tr class="text-muted">
+                            <th>Sender</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in contact_messages %}
+                        <tr>
+                            <td class="fw-bold">{{ msg.name }}</td>
+                            <td><a href="mailto:{{ msg.email }}" class="text-info text-decoration-none">{{ msg.email }}</a></td>
+                            <td class="text-truncate" style="max-width: 200px;">{{ msg.subject }}</td>
+                            <td>{{ msg.created_at|date:"M d, H:i" }}</td>
+                            <td>
+                                {% if msg.is_read %}
+                                <span class="badge bg-success bg-opacity-25 text-success">Read</span>
+                                {% else %}
+                                <span class="badge bg-danger bg-opacity-25 text-danger">New</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">No messages received yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/dashboard/api/stats/')
+        .then(res => res.json())
+        .then(data => {
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.traffic_labels,
+                    datasets: [{
+                        label: 'Daily Visitors',
+                        data: data.traffic_data,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+        });
+});
+</script>
+{% endblock %}

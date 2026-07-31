@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ profile.name|default:"Vyankateshwar Santosh Pund" }} | Software Engineer Portfolio{% endblock %}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Production Personal Portfolio of Vyankateshwar Santosh Pund - Junior Software Engineer, Python Developer, Django Backend Developer, Python Full Stack Developer.">
+    <meta name="keywords" content="Vyankateshwar Pund, Python Developer, Django Developer, Software Engineer, REST API, Full Stack Developer, MySQL, Amravati, India">
+    <meta name="author" content="Vyankateshwar Santosh Pund">
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Vyankateshwar Santosh Pund - Software Engineer Portfolio">
+    <meta property="og:description" content="Production-ready portfolio showcasing Python, Django, REST APIs, MySQL, and Full Stack Web Projects.">
+    <meta property="og:url" content="http://localhost:8000/">
+    <meta property="og:image" content="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}/static/images/profile-fallback.png{% endif %}">
+
+    <!-- JSON-LD Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Vyankateshwar Santosh Pund",
+      "jobTitle": "Junior Software Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "CCIT Institute"
+      },
+      "url": "http://localhost:8000/",
+      "sameAs": [
+        "https://github.com/vyankateshwarpund",
+        "https://linkedin.com/in/vyankateshwar-pund-7a654632b"
+      ],
+      "email": "pundvyankateshwar@gmail.com",
+      "telephone": "+91 8263986554",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Amravati",
+        "addressRegion": "Maharashtra",
+        "addressCountry": "India"
+      }
+    }
+    </script>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#6366f1">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-logo">VP</div>
+        <div class="small text-muted mt-2 fw-semibold">Loading Portfolio...</div>
+        <div class="preloader-bar">
+            <div class="preloader-progress"></div>
+        </div>
+    </div>
+
+    <!-- Gradient Blobs Background -->
+    <div class="gradient-blob blob-1"></div>
+    <div class="gradient-blob blob-2"></div>
+
+    <!-- Canvas Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor d-none d-md-block"></div>
+    <div class="custom-cursor-dot d-none d-md-block"></div>
+
+    <!-- Floating Navbar -->
+    {% include 'components/navbar.html' %}
+
+    <!-- Main Page Content -->
+    <main style="min-height: 80vh;">
+        {% if messages %}
+        <div class="container mt-5 pt-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show glass-card" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/918263986554?text=Hi%20Vyankateshwar,%20I%20reviewed%20your%20portfolio!" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <!-- Back to Top Button -->
+    <div id="back-to-top" class="back-to-top" title="Back to Top">
+        <i class="bi bi-arrow-up-short fs-3"></i>
+    </div>
+
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/github.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

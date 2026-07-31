@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Technical Skills & Recruiter Metrics | Vyankateshwar Pund{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">Recruiter Metrics</span>
+            <h2 class="section-title mt-2">Technical Skills & Practical Experience</h2>
+            <p class="section-subtitle">Demonstrated proficiency based on real-world projects, problem solving, and backend architecture.</p>
+        </div>
+
+        <!-- Backend Skills with Recruiter Metrics -->
+        <div class="mb-5">
+            <h4 class="fw-bold mb-4 text-main"><i class="bi bi-server text-primary me-2"></i>Backend Development & Frameworks</h4>
+            <div class="row g-4">
+                {% for skill in backend_skills %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fs-2 text-primary"><i class="{{ skill.icon_class }}"></i></span>
+                                <div>
+                                    <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
+                                    <span class="badge bg-primary bg-opacity-25 text-primary extra-small">{{ skill.level_label }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recruiter Metrics Badges -->
+                        <div class="row g-2 mb-3 text-center extra-small">
+                            <div class="col-4">
+                                <div class="glass-card-sm bg-secondary bg-opacity-10">
+                                    <span class="text-muted d-block">Exp</span>
+                                    <strong class="text-main">{{ skill.years_experience }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="glass-card-sm bg-secondary bg-opacity-10">
+                                    <span class="text-muted d-block">Solved</span>
+                                    <strong class="text-info">{{ skill.problems_solved }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="glass-card-sm bg-secondary bg-opacity-10">
+                                    <span class="text-muted d-block">Projects</span>
+                                    <strong class="text-success">{{ skill.projects_count }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" style="width: {{ skill.proficiency_percent }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Database Skills -->
+        <div class="mb-5">
+            <h4 class="fw-bold mb-4 text-main"><i class="bi bi-database-gear text-info me-2"></i>Databases & SQL Optimization</h4>
+            <div class="row g-4">
+                {% for skill in database_skills %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fs-2 text-info"><i class="{{ skill.icon_class }}"></i></span>
+                                <div>
+                                    <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
+                                    <span class="badge bg-info bg-opacity-25 text-info extra-small">{{ skill.level_label }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3 text-center extra-small">
+                            <div class="col-4">
+                                <div class="glass-card-sm bg-secondary bg-opacity-10">
+                                    <span class="text-muted d-block">Exp</span>
+                                    <strong class="text-main">{{ skill.years_experience }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="glass-card-sm bg-secondary bg-opacity-10">
+                                    <span class="text-muted d-block">Queries</span>
+                                    <strong class="text-info">{{ skill.problems_solved }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="glass-card-sm bg-secondary bg-opacity-10">
+                                    <span class="text-muted d-block">Schemas</span>
+                                    <strong class="text-success">{{ skill.projects_count }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" style="width: {{ skill.proficiency_percent }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Frontend & Tools -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <h4 class="fw-bold mb-4 text-main"><i class="bi bi-tools text-success me-2"></i>Developer Tools & DevOps</h4>
+                <div class="row g-3">
+                    {% for skill in tools_skills %}
+                    <div class="col-6">
+                        <div class="glass-card p-3 d-flex align-items-center gap-3">
+                            <i class="{{ skill.icon_class }} fs-3 text-success"></i>
+                            <div>
+                                <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
+                                <small class="text-muted">{{ skill.years_experience }} • {{ skill.level_label }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <h4 class="fw-bold mb-4 text-main"><i class="bi bi-bricks text-pink me-2"></i>Architecture & Concepts</h4>
+                <div class="row g-3">
+                    {% for skill in concept_skills %}
+                    <div class="col-6">
+                        <div class="glass-card p-3 d-flex align-items-center gap-3">
+                            <i class="{{ skill.icon_class }} fs-3 text-danger"></i>
+                            <div>
+                                <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
+                                <small class="text-muted">{{ skill.years_experience }} • {{ skill.level_label }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

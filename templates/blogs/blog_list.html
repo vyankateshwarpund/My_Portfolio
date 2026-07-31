@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tech Blog | Vyankateshwar Pund{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">Technical Articles</span>
+            <h2 class="section-title mt-2">Software Engineering Blog</h2>
+            <p class="section-subtitle">Insights on Python backend engineering, Django REST Framework, and MySQL optimization.</p>
+        </div>
+
+        <div class="row g-4">
+            {% for blog in blogs %}
+            <div class="col-lg-4 col-md-6">
+                <div class="glass-card h-100 d-flex flex-column">
+                    <div class="position-relative overflow-hidden rounded-3 mb-3" style="height:180px; background:#1e293b;">
+                        {% if blog.cover_image %}
+                        <img src="{{ blog.cover_image.url }}" alt="{{ blog.title }}" class="w-100 h-100 object-fit-cover">
+                        {% else %}
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center gradient-text fs-1 opacity-50">
+                            <i class="bi bi-journal-code"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge bg-primary bg-opacity-25 text-primary small">{{ blog.category.name|default:"Tech" }}</span>
+                        <span class="text-muted extra-small"><i class="bi bi-clock me-1"></i>{{ blog.reading_time }} min read</span>
+                    </div>
+
+                    <h5 class="fw-bold mb-2 text-white">
+                        <a href="{% url 'blog_detail' slug=blog.slug %}" class="text-white text-decoration-none">
+                            {{ blog.title }}
+                        </a>
+                    </h5>
+                    <p class="text-muted small flex-grow-1 mb-3">{{ blog.excerpt }}</p>
+
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25 mt-auto">
+                        <span class="text-muted extra-small"><i class="bi bi-calendar3 me-1"></i>{{ blog.created_at|date:"M d, Y" }}</span>
+                        <a href="{% url 'blog_detail' slug=blog.slug %}" class="btn btn-glass btn-sm">Read Article <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="glass-card p-5">
+                    <i class="bi bi-journal-x fs-1 text-muted d-block mb-3"></i>
+                    <h5 class="text-white">No blog posts found</h5>
+                    <p class="text-muted">Check back soon for new articles on Python and Django backend development.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

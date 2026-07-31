@@ -1,0 +1,79 @@
+<footer>
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-4 col-md-6">
+                <a class="navbar-brand gradient-text fs-3 mb-2 d-block" href="{% url 'home' %}">
+                    Vyankateshwar Pund
+                </a>
+                <p class="text-muted small mb-3">
+                    Fresher Software Engineer & Python Backend Developer passionate about designing high-performance REST APIs, 
+                    relational MySQL databases, and clean architecture full-stack solutions.
+                </p>
+
+                <!-- Availability Badges -->
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50"><i class="bi bi-briefcase-fill me-1"></i> Open to Full-time</span>
+                    <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-50"><i class="bi bi-mortarboard-fill me-1"></i> Open to Internship</span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    {% for social in social_links %}
+                    <a href="{{ social.url }}" target="_blank" class="btn btn-glass btn-sm rounded-circle p-2" style="width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center;" title="{{ social.platform }}">
+                        <i class="{{ social.icon_class }}"></i>
+                    </a>
+                    {% empty %}
+                    <a href="https://github.com/vyankateshwarpund" target="_blank" class="btn btn-glass btn-sm rounded-circle p-2"><i class="bi bi-github"></i></a>
+                    <a href="https://linkedin.com/in/vyankateshwar-pund-7a654632b" target="_blank" class="btn btn-glass btn-sm rounded-circle p-2"><i class="bi bi-linkedin"></i></a>
+                    <a href="mailto:pundvyankateshwar@gmail.com" class="btn btn-glass btn-sm rounded-circle p-2"><i class="bi bi-envelope-fill"></i></a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <h6 class="text-white mb-3 fw-bold">Quick Navigation</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Home</a></li>
+                    <li class="mb-2"><a href="{% url 'about' %}" class="text-muted text-decoration-none">About Me</a></li>
+                    <li class="mb-2"><a href="{% url 'skills_list' %}" class="text-muted text-decoration-none">Skills & Metrics</a></li>
+                    <li class="mb-2"><a href="{% url 'project_list' %}" class="text-muted text-decoration-none">Projects Showcase</a></li>
+                    <li class="mb-2"><a href="{% url 'services' %}" class="text-muted text-decoration-none">Services</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <h6 class="text-white mb-3 fw-bold">Portfolio Apps</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="{% url 'resume' %}" class="text-muted text-decoration-none">Resume Preview</a></li>
+                    <li class="mb-2"><a href="{% url 'certificates' %}" class="text-muted text-decoration-none">Certificates</a></li>
+                    <li class="mb-2"><a href="{% url 'achievements' %}" class="text-muted text-decoration-none">Achievements</a></li>
+                    <li class="mb-2"><a href="{% url 'blog_list' %}" class="text-muted text-decoration-none">Tech Blog</a></li>
+                    {% if request.user.is_authenticated and request.user.is_staff %}
+                    <li class="mb-2"><a href="{% url 'admin_dashboard' %}" class="text-muted text-decoration-none">Analytics Dashboard</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <h6 class="text-white mb-3 fw-bold">Contact Details</h6>
+                <ul class="list-unstyled small text-muted mb-3">
+                    <li class="mb-2"><i class="bi bi-envelope-fill text-warning me-2"></i> pundvyankateshwar@gmail.com</li>
+                    <li class="mb-2"><i class="bi bi-telephone-fill text-info me-2"></i> +91 8263986554</li>
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill text-success me-2"></i> Amravati, Maharashtra, India</li>
+                </ul>
+                <a href="{% url 'contact' %}" class="btn btn-gradient btn-sm w-100"><i class="bi bi-chat-left-dots me-1"></i> Send a Message</a>
+            </div>
+        </div>
+
+        <hr class="my-4 border-secondary opacity-25">
+
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                <span class="text-muted small">&copy; 2026 Vyankateshwar Santosh Pund. Made with <span class="text-danger">Python ❤️ Django</span></span>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <span class="badge bg-dark border border-secondary text-muted me-2"><i class="bi bi-shield-check text-success"></i> Production Ready</span>
+                <span class="badge bg-dark border border-secondary text-muted"><i class="bi bi-cpu text-info"></i> Django 6 + MySQL</span>
+            </div>
+        </div>
+    </div>
+</footer>

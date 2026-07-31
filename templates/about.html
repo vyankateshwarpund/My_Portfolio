@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Vyankateshwar Pund | Fresher Software Engineer{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-5">
+                <div class="glass-card p-3 position-relative">
+                    <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/vyankateshwar_profile.jpg' %}{% endif %}" alt="Vyankateshwar Pund" class="w-100 rounded-3 shadow object-fit-cover" style="max-height: 480px;">
+                    <div class="mt-3 text-center">
+                        <h4 class="fw-bold text-main mb-1">{{ profile.name|default:"Vyankateshwar Santosh Pund" }}</h4>
+                        <p class="text-primary small mb-2"><i class="bi bi-geo-alt-fill me-1"></i>{{ profile.location|default:"Amravati, Maharashtra, India" }}</p>
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">Fresher Candidate • Open to Relocation</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">About Me</span>
+                <h2 class="section-title mt-2">Fresher Software Engineer & Backend Developer</h2>
+                
+                <p class="text-muted leading-relaxed mb-4">
+                    {{ profile.about_summary }}
+                </p>
+
+                <div class="glass-card mb-4 border-start border-4 border-primary">
+                    <h6 class="fw-bold text-main mb-2"><i class="bi bi-compass-fill text-primary me-2"></i>Career Vision</h6>
+                    <p class="text-muted small mb-0">{{ profile.career_goals }}</p>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="glass-card p-3">
+                            <h6 class="fw-bold text-main mb-1"><i class="bi bi-award-fill text-warning me-2"></i>Degree</h6>
+                            <p class="text-muted small mb-0">Bachelor of Engineering in CS (CGPA 8.06)</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="glass-card p-3">
+                            <h6 class="fw-bold text-main mb-1"><i class="bi bi-briefcase-fill text-info me-2"></i>Internship Experience</h6>
+                            <p class="text-muted small mb-0">Software Engineer Intern at CCIT Institute (3 Months)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experience & Education Timeline -->
+        <div class="row mt-5 pt-5 gy-5">
+            <div class="col-lg-6">
+                <h3 class="fw-bold mb-4 gradient-text"><i class="bi bi-briefcase-fill me-2"></i>Internship Experience</h3>
+                <div class="timeline">
+                    {% for exp in experiences %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card">
+                            <span class="badge bg-primary bg-opacity-25 text-primary mb-2">
+                                {{ exp.start_date|date:"M Y" }} - {{ exp.end_date|date:"M Y" }} (3 Months)
+                            </span>
+                            <h5 class="fw-bold text-main mb-1">{{ exp.role }}</h5>
+                            <h6 class="text-muted small mb-3">{{ exp.company_name }} | {{ exp.location }}</h6>
+                            <p class="text-muted small mb-3" style="white-space: pre-line;">{{ exp.responsibilities }}</p>
+                            <span class="badge bg-dark border border-secondary text-info small">Tech: {{ exp.tech_stack_used }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <h3 class="fw-bold mb-4 gradient-text"><i class="bi bi-mortarboard-fill me-2"></i>Education</h3>
+                <div class="timeline">
+                    {% for edu in education_list %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card">
+                            <span class="badge bg-success bg-opacity-25 text-success mb-2">
+                                {{ edu.start_year }} - {{ edu.end_year }}
+                            </span>
+                            <h5 class="fw-bold text-main mb-1">{{ edu.degree }} - {{ edu.field_of_study }}</h5>
+                            <h6 class="text-muted small mb-2">{{ edu.institution }}</h6>
+                            <div class="badge bg-warning bg-opacity-25 text-warning mb-3">CGPA: {{ edu.cgpa }}</div>
+                            <p class="text-muted small mb-0">{{ edu.details }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

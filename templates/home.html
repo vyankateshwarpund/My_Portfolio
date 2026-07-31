@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vyankateshwar Pund | Fresher Software Engineer & Python Django Developer{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-7 text-center text-lg-start">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill glass-card border border-primary border-opacity-50">
+                    <span class="spinner-grow spinner-grow-sm text-success" role="status"></span>
+                    <span class="small fw-bold theme-pill-text">Fresher • Open to Internship & Entry-level Full-time Roles</span>
+                </div>
+
+                <h1 class="display-4 fw-extrabold mb-3">
+                    Hi, I'm <span class="gradient-text">{{ profile.name|default:"Vyankateshwar Pund" }}</span>
+                </h1>
+
+                <h3 class="fs-4 theme-sub-text mb-4">
+                    I am a <span id="typewriter-text" class="gradient-text fw-bold"></span><span class="cursor-blink">|</span>
+                </h3>
+
+                <p class="lead hero-paragraph mb-4 pe-lg-4 fs-5">
+                    Fresher Software Engineer with 3 months of internship experience building Python applications, 
+                    scalable REST APIs, MySQL databases, and responsive full-stack web platforms.
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3 mb-5">
+                    <a href="{{ profile.github_url|default:'https://github.com/vyankateshwarpund' }}" target="_blank" class="btn btn-glass">
+                        <i class="bi bi-github me-2"></i>GitHub
+                    </a>
+                    <a href="{{ profile.linkedin_url|default:'https://linkedin.com/in/vyankateshwar-pund-7a654632b' }}" target="_blank" class="btn btn-glass">
+                        <i class="bi bi-linkedin me-2 text-info"></i>LinkedIn
+                    </a>
+                    <a href="{% url 'resume' %}" class="btn btn-gradient">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>Download Resume
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-glass">
+                        <i class="bi bi-envelope-fill me-2 text-warning"></i>Contact Me
+                    </a>
+                </div>
+
+                <!-- Floating Tech Badges -->
+                <div class="d-flex align-items-center gap-2 flex-wrap justify-content-center justify-content-lg-start pt-2">
+                    <span class="small theme-sub-text fw-bold text-uppercase me-2">Core Tech:</span>
+                    <span class="badge theme-tech-badge px-3 py-2"><i class="bi bi-filetype-py text-warning me-1"></i> Python</span>
+                    <span class="badge theme-tech-badge px-3 py-2"><i class="bi bi-box-seam text-success me-1"></i> Django</span>
+                    <span class="badge theme-tech-badge px-3 py-2"><i class="bi bi-cpu text-info me-1"></i> DRF</span>
+                    <span class="badge theme-tech-badge px-3 py-2"><i class="bi bi-database text-info me-1"></i> MySQL</span>
+                    <span class="badge theme-tech-badge px-3 py-2"><i class="bi bi-box text-primary me-1"></i> Docker</span>
+                </div>
+            </div>
+
+            <!-- Profile Avatar Ring -->
+            <div class="col-lg-5 text-center">
+                <div class="hero-profile-ring shadow-lg">
+                    <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/vyankateshwar_profile.jpg' %}{% endif %}" alt="{{ profile.name }}">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Animated Stat Counter Cards for Fresher Profile -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-2 col-6 ms-auto">
+                <div class="glass-card stat-box h-100">
+                    <div class="stat-icon">🚀</div>
+                    <div class="stat-number counter-value" data-target="{{ profile.projects_completed_count|default:8 }}" data-suffix="+">0</div>
+                    <div class="small theme-sub-text fw-bold">Projects Built</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="glass-card stat-box h-100">
+                    <div class="stat-icon">💼</div>
+                    <div class="stat-number counter-value" data-target="3" data-suffix=" Mos">0</div>
+                    <div class="small theme-sub-text fw-bold">Internship Exp</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="glass-card stat-box h-100">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-number counter-value" data-target="{{ profile.github_contributions_count|default:600 }}" data-suffix="+">0</div>
+                    <div class="small theme-sub-text fw-bold">GitHub Contributions</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="glass-card stat-box h-100">
+                    <div class="stat-icon">🛠</div>
+                    <div class="stat-number counter-value" data-target="{{ profile.technologies_count|default:15 }}" data-suffix="+">0</div>
+                    <div class="small theme-sub-text fw-bold">Technologies</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 me-auto">
+                <div class="glass-card stat-box h-100">
+                    <div class="stat-icon">☕</div>
+                    <div class="stat-number counter-value" data-target="{{ profile.hours_coding_count|default:500 }}" data-suffix="+">0</div>
+                    <div class="small theme-sub-text fw-bold">Hours Coding</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured SaaS Projects Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">SaaS Architecture & Code</span>
+            <h2 class="section-title mt-2">Featured Software Projects</h2>
+            <p class="section-subtitle">Production-grade systems built with REST APIs, authentication, and database schemas.</p>
+        </div>
+
+        <div class="row g-4">
+            {% for project in featured_projects %}
+            <div class="col-lg-4 col-md-6">
+                <div class="glass-card h-100 d-flex flex-column">
+                    <!-- Project Image Banner -->
+                    <div class="position-relative overflow-hidden rounded-3 mb-3" style="height:210px; background:#1e293b;">
+                        {% if project.featured_image %}
+                        <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="w-100 h-100 object-fit-cover">
+                        {% else %}
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center gradient-text fs-1 fw-bold opacity-50">
+                            <i class="bi bi-code-square"></i>
+                        </div>
+                        {% endif %}
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 border border-success text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i>{{ project.status_badge }}
+                        </span>
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-dark bg-opacity-75 border border-info text-info">
+                            {{ project.category.name|default:"Backend" }}
+                        </span>
+                    </div>
+
+                    <!-- Title & Description -->
+                    <h5 class="fw-bold mb-2 text-main">{{ project.title }}</h5>
+                    <p class="text-muted small flex-grow-1 mb-3" style="line-height:1.4;">{{ project.short_description }}</p>
+
+                    <!-- Feature Checklist Pills -->
+                    <div class="mb-3">
+                        <span class="extra-small text-muted fw-bold text-uppercase d-block mb-1">Key Modules:</span>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span class="badge theme-tech-badge small"><i class="bi bi-shield-check text-success me-1"></i> JWT Auth</span>
+                            <span class="badge theme-tech-badge small"><i class="bi bi-cpu text-info me-1"></i> REST API</span>
+                            <span class="badge theme-tech-badge small"><i class="bi bi-database text-warning me-1"></i> MySQL</span>
+                            <span class="badge theme-tech-badge small"><i class="bi bi-box text-primary me-1"></i> Docker Ready</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech Stack Badges -->
+                    <div class="mb-3">
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for tech in project.tech_stack.all %}
+                            <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25 extra-small">{{ tech.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Real Metrics Badge Bar -->
+                    <div class="glass-card-sm bg-secondary bg-opacity-10 d-flex justify-content-between text-muted extra-small mb-3">
+                        <span><i class="bi bi-graph-up text-success me-1"></i>{{ project.api_calls_count }}</span>
+                        <span><i class="bi bi-table text-warning me-1"></i>{{ project.db_tables_count }}</span>
+                        <span><i class="bi bi-plug text-info me-1"></i>{{ project.apis_count }}</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25 mt-auto">
+                        <div class="d-flex gap-2">
+                            {% if project.live_demo_url %}
+                            <a href="{{ project.live_demo_url }}" target="_blank" class="btn btn-gradient btn-sm"><i class="bi bi-box-arrow-up-right"></i> Live Demo</a>
+                            {% endif %}
+                            {% if project.github_url %}
+                            <a href="{{ project.github_url }}" target="_blank" class="btn btn-glass btn-sm"><i class="bi bi-github"></i> GitHub</a>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'project_detail' slug=project.slug %}" class="btn btn-glass btn-sm px-2" title="Case Study"><i class="bi bi-journal-text"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'project_list' %}" class="btn btn-glass px-4">
+                View All Projects <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Technology Logos Grid -->
+<section class="py-5 bg-secondary bg-opacity-10">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill fw-semibold">Technical Stack</span>
+            <h2 class="section-title mt-2">Tools & Technologies</h2>
+            <p class="section-subtitle">Core frameworks, databases, and developer environments.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-warning"><i class="bi bi-filetype-py"></i></div>
+                    <div class="tech-logo-title">Python</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-success"><i class="bi bi-box-seam"></i></div>
+                    <div class="tech-logo-title">Django</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-info"><i class="bi bi-cpu-fill"></i></div>
+                    <div class="tech-logo-title">Django REST</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-primary"><i class="bi bi-database"></i></div>
+                    <div class="tech-logo-title">MySQL</div>
+                </div>
+            </div>
+            <!-- React Atom SVG Logo Box -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon" style="color: #61dafb;">
+                        <svg width="40" height="40" viewBox="-11.5 -10.23174 23 20.46348" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="0" cy="0" r="2" fill="#61dafb"/>
+                            <g stroke="#61dafb" stroke-width="1" fill="none">
+                                <ellipse rx="11" ry="4.2"/>
+                                <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+                                <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="tech-logo-title">React</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-danger"><i class="bi bi-git"></i></div>
+                    <div class="tech-logo-title">Git</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-primary"><i class="bi bi-github"></i></div>
+                    <div class="tech-logo-title">GitHub</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-primary"><i class="bi bi-box"></i></div>
+                    <div class="tech-logo-title">Docker</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-danger"><i class="bi bi-hdd-stack"></i></div>
+                    <div class="tech-logo-title">Redis</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-warning"><i class="bi bi-terminal-fill"></i></div>
+                    <div class="tech-logo-title">Linux</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-info"><i class="bi bi-code-slash"></i></div>
+                    <div class="tech-logo-title">VS Code</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-logo-card">
+                    <div class="tech-logo-icon text-warning"><i class="bi bi-send-check"></i></div>
+                    <div class="tech-logo-title">Postman</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+{% if testimonials %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-pink bg-opacity-10 text-pink px-3 py-2 rounded-pill fw-semibold">Endorsements</span>
+            <h2 class="section-title mt-2">Testimonials & Recommendations</h2>
+            <p class="section-subtitle">What mentors and colleagues say about my code quality and work ethic.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            {% for t in testimonials %}
+            <div class="col-md-6">
+                <div class="glass-card h-100 p-4 border-start border-4 border-primary">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-muted fst-italic mb-4">"{{ t.content }}"</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary bg-opacity-25 text-primary p-2 d-flex align-items-center justify-content-center" style="width:45px; height:45px;">
+                            <i class="bi bi-person-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-main mb-0">{{ t.name }}</h6>
+                            <span class="text-muted extra-small">{{ t.designation }} • {{ t.organization }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
