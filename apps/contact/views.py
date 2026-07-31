@@ -33,9 +33,12 @@ def contact_view(request):
 
             # Print debug info to Render logs
             print("--- SMTP DEBUG INFO ---")
+            print("BACKEND:", getattr(settings, 'EMAIL_BACKEND', None))
             print("HOST:", getattr(settings, 'EMAIL_HOST', None))
             print("PORT:", getattr(settings, 'EMAIL_PORT', None))
             print("USER:", getattr(settings, 'EMAIL_HOST_USER', None))
+            print("DEFAULT FROM:", getattr(settings, 'DEFAULT_FROM_EMAIL', None))
+            print("PASSWORD SET?:", bool(getattr(settings, 'EMAIL_HOST_PASSWORD', None)))
             print("PASSWORD LENGTH:", len(getattr(settings, 'EMAIL_HOST_PASSWORD', '') or ''))
             print("-----------------------")
 

@@ -154,19 +154,19 @@ REST_FRAMEWORK = {
 }
 
 # EMAIL CONFIGURATION (Gmail SMTP)
-# Credentials must be set as Environment Variables on Render — never hardcoded.
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_TIMEOUT = 10  # Prevent Gunicorn worker from hanging on SMTP timeout
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # 16-char Gmail App Password, no spaces
-DEFAULT_FROM_EMAIL = f"Vyankateshwar Pund Portfolio <{EMAIL_HOST_USER}>"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "pundvyankateshwar@gmail.com")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # 16-char Gmail App Password (no spaces)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 RECIPIENT_EMAIL = 'pundvyankateshwar@gmail.com'
 
-# Use console backend locally if env vars are not set
-if not EMAIL_HOST_PASSWORD:
+# If EMAIL_HOST_PASSWORD is missing in Environment Variables, fall back to console logging
+if EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # WhiteNoise static file compression & caching for production
