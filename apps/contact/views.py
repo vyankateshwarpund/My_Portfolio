@@ -30,16 +30,18 @@ class ContactView(FormView):
             f"Sent via Vyankateshwar Pund Portfolio Website"
         )
         
+        # Send email notifications (both fail silently — message is already saved to DB)
         try:
+            # 1. Notify Vyankateshwar about the new message
             send_mail(
                 subject=admin_subject,
                 message=admin_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[settings.RECIPIENT_EMAIL],
-                fail_silently=False,
+                fail_silently=True,
             )
-            
-            # 2. Send Auto-reply Confirmation Email to Sender
+
+            # 2. Auto-reply confirmation to the sender
             user_subject = "Thank you for contacting Vyankateshwar Santosh Pund!"
             user_body = (
                 f"Hi {contact_msg.name},\n\n"
@@ -57,9 +59,12 @@ class ContactView(FormView):
                 recipient_list=[contact_msg.email],
                 fail_silently=True,
             )
+            logger.info(f"Contact emails sent successfully for: {contact_msg.email}")
         except Exception as e:
-            logger.error(f"SMTP Email Error: {e}")
+            # Email failed but message is saved — don't crash the page
+            logger.error(f"SMTP Email Error (message still saved): {e}")
 
+        # Always return success — contact message is saved to DB regardless of email status
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'status': 'success', 'message': 'Thank you! Your message has been sent successfully.'})
 

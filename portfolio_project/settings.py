@@ -148,7 +148,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'pundvyankateshwar@gmail.com')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'airu uhgy twrg lgrp')  # 16-character Gmail App Password
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'airuuhgytwrglgrp')  # 16-character Gmail App Password (no spaces)
 DEFAULT_FROM_EMAIL = f"Vyankateshwar Pund Portfolio <{EMAIL_HOST_USER}>"
 RECIPIENT_EMAIL = 'pundvyankateshwar@gmail.com'
 
