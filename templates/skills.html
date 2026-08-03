@@ -6,53 +6,58 @@
 {% block content %}
 <section class="py-5 mt-5">
     <div class="container">
+        <!-- Page Header -->
         <div class="text-center mb-5">
-            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">Recruiter Metrics</span>
-            <h2 class="section-title mt-2">Technical Skills & Practical Experience</h2>
-            <p class="section-subtitle">Demonstrated proficiency based on real-world projects, problem solving, and backend architecture.</p>
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold border border-primary border-opacity-25">
+                <i class="bi bi-patch-check-fill me-1"></i> Technical Stack & Metrics
+            </span>
+            <h2 class="section-title mt-3">Technical Skills & Practical Experience</h2>
+            <p class="section-subtitle">Demonstrated proficiency based on real-world projects, 3-month internship experience, and backend architecture.</p>
         </div>
 
-        <!-- Backend Skills with Recruiter Metrics -->
+        <!-- 1. Backend Development & Frameworks -->
         <div class="mb-5">
-            <h4 class="fw-bold mb-4 text-main"><i class="bi bi-server text-primary me-2"></i>Backend Development & Frameworks</h4>
+            <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-primary fs-3"><i class="bi bi-server"></i></div>
+                <div>
+                    <h4 class="fw-bold text-main mb-1">Backend Development & Frameworks</h4>
+                    <p class="text-muted small mb-0">Core Python backend development, RESTful APIs, and scalable application architecture.</p>
+                </div>
+            </div>
+
             <div class="row g-4">
                 {% for skill in backend_skills %}
                 <div class="col-md-6 col-lg-4">
-                    <div class="glass-card">
+                    <div class="glass-card h-100 p-4 hover-lift">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div class="d-flex align-items-center gap-3">
-                                <span class="fs-2 text-primary"><i class="{{ skill.icon_class }}"></i></span>
+                                <div class="skill-icon-wrapper p-2 bg-primary bg-opacity-10 rounded-3 text-primary fs-2">
+                                    <i class="{{ skill.icon_class }}"></i>
+                                </div>
                                 <div>
-                                    <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
-                                    <span class="badge bg-primary bg-opacity-25 text-primary extra-small">{{ skill.level_label }}</span>
+                                    <h5 class="fw-bold text-main mb-1">{{ skill.name }}</h5>
+                                    <span class="badge bg-primary bg-opacity-25 text-primary extra-small px-2 py-1">{{ skill.level_label }}</span>
                                 </div>
                             </div>
+                            <span class="fw-bold text-primary fs-5">{{ skill.proficiency_percent }}%</span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-bar-custom mb-3" style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-fill" style="width: {{ skill.proficiency_percent }}%; height: 100%; background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%); border-radius: 4px;"></div>
                         </div>
 
                         <!-- Recruiter Metrics Badges -->
-                        <div class="row g-2 mb-3 text-center extra-small">
-                            <div class="col-4">
-                                <div class="glass-card-sm bg-secondary bg-opacity-10">
-                                    <span class="text-muted d-block">Exp</span>
-                                    <strong class="text-main">{{ skill.years_experience }}</strong>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="glass-card-sm bg-secondary bg-opacity-10">
-                                    <span class="text-muted d-block">Solved</span>
-                                    <strong class="text-info">{{ skill.problems_solved }}</strong>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="glass-card-sm bg-secondary bg-opacity-10">
-                                    <span class="text-muted d-block">Projects</span>
-                                    <strong class="text-success">{{ skill.projects_count }}</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="progress-bar-custom">
-                            <div class="progress-fill" style="width: {{ skill.proficiency_percent }}%;"></div>
+                        <div class="d-flex flex-wrap gap-2 mt-auto">
+                            <span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25 px-2 py-1 small">
+                                ⏱️ {{ skill.years_experience }}
+                            </span>
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 small">
+                                🧩 {{ skill.problems_solved }}
+                            </span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 small">
+                                📁 {{ skill.projects_count }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -60,46 +65,49 @@
             </div>
         </div>
 
-        <!-- Database Skills -->
+        <!-- 2. Databases & SQL Optimization -->
         <div class="mb-5">
-            <h4 class="fw-bold mb-4 text-main"><i class="bi bi-database-gear text-info me-2"></i>Databases & SQL Optimization</h4>
+            <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                <div class="p-3 bg-info bg-opacity-10 rounded-3 text-info fs-3"><i class="bi bi-database-gear"></i></div>
+                <div>
+                    <h4 class="fw-bold text-main mb-1">Databases & SQL Optimization</h4>
+                    <p class="text-muted small mb-0">Relational database modeling, Django ORM query optimization, and schema design.</p>
+                </div>
+            </div>
+
             <div class="row g-4">
                 {% for skill in database_skills %}
                 <div class="col-md-6 col-lg-4">
-                    <div class="glass-card">
+                    <div class="glass-card h-100 p-4 hover-lift">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div class="d-flex align-items-center gap-3">
-                                <span class="fs-2 text-info"><i class="{{ skill.icon_class }}"></i></span>
+                                <div class="skill-icon-wrapper p-2 bg-info bg-opacity-10 rounded-3 text-info fs-2">
+                                    <i class="{{ skill.icon_class }}"></i>
+                                </div>
                                 <div>
-                                    <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
-                                    <span class="badge bg-info bg-opacity-25 text-info extra-small">{{ skill.level_label }}</span>
+                                    <h5 class="fw-bold text-main mb-1">{{ skill.name }}</h5>
+                                    <span class="badge bg-info bg-opacity-25 text-info extra-small px-2 py-1">{{ skill.level_label }}</span>
                                 </div>
                             </div>
+                            <span class="fw-bold text-info fs-5">{{ skill.proficiency_percent }}%</span>
                         </div>
 
-                        <div class="row g-2 mb-3 text-center extra-small">
-                            <div class="col-4">
-                                <div class="glass-card-sm bg-secondary bg-opacity-10">
-                                    <span class="text-muted d-block">Exp</span>
-                                    <strong class="text-main">{{ skill.years_experience }}</strong>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="glass-card-sm bg-secondary bg-opacity-10">
-                                    <span class="text-muted d-block">Queries</span>
-                                    <strong class="text-info">{{ skill.problems_solved }}</strong>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="glass-card-sm bg-secondary bg-opacity-10">
-                                    <span class="text-muted d-block">Schemas</span>
-                                    <strong class="text-success">{{ skill.projects_count }}</strong>
-                                </div>
-                            </div>
+                        <!-- Progress Bar -->
+                        <div class="progress-bar-custom mb-3" style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-fill" style="width: {{ skill.proficiency_percent }}%; height: 100%; background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%); border-radius: 4px;"></div>
                         </div>
 
-                        <div class="progress-bar-custom">
-                            <div class="progress-fill" style="width: {{ skill.proficiency_percent }}%;"></div>
+                        <!-- Recruiter Metrics Badges -->
+                        <div class="d-flex flex-wrap gap-2 mt-auto">
+                            <span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25 px-2 py-1 small">
+                                ⏱️ {{ skill.years_experience }}
+                            </span>
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 small">
+                                ⚡ {{ skill.problems_solved }}
+                            </span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 small">
+                                🗄️ {{ skill.projects_count }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -107,18 +115,87 @@
             </div>
         </div>
 
-        <!-- Frontend & Tools -->
-        <div class="row g-4">
+        <!-- 3. Frontend & UI Technologies -->
+        {% if frontend_skills %}
+        <div class="mb-5">
+            <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                <div class="p-3 bg-warning bg-opacity-10 rounded-3 text-warning fs-3"><i class="bi bi-window-sidebar"></i></div>
+                <div>
+                    <h4 class="fw-bold text-main mb-1">Frontend & UI Technologies</h4>
+                    <p class="text-muted small mb-0">Responsive UI design, JavaScript interactivity, Bootstrap 5, and Glassmorphism layouts.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% for skill in frontend_skills %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card h-100 p-4 hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="skill-icon-wrapper p-2 bg-warning bg-opacity-10 rounded-3 text-warning fs-2">
+                                    <i class="{{ skill.icon_class }}"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-main mb-1">{{ skill.name }}</h5>
+                                    <span class="badge bg-warning bg-opacity-25 text-warning extra-small px-2 py-1">{{ skill.level_label }}</span>
+                                </div>
+                            </div>
+                            <span class="fw-bold text-warning fs-5">{{ skill.proficiency_percent }}%</span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-bar-custom mb-3" style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-fill" style="width: {{ skill.proficiency_percent }}%; height: 100%; background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px;"></div>
+                        </div>
+
+                        <!-- Recruiter Metrics Badges -->
+                        <div class="d-flex flex-wrap gap-2 mt-auto">
+                            <span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25 px-2 py-1 small">
+                                ⏱️ {{ skill.years_experience }}
+                            </span>
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 small">
+                                🎨 {{ skill.problems_solved }}
+                            </span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 small">
+                                💻 {{ skill.projects_count }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 4. Tools, DevOps & Architecture -->
+        <div class="row g-4 mb-5">
+            <!-- Developer Tools & DevOps -->
             <div class="col-lg-6">
-                <h4 class="fw-bold mb-4 text-main"><i class="bi bi-tools text-success me-2"></i>Developer Tools & DevOps</h4>
+                <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                    <div class="p-3 bg-success bg-opacity-10 rounded-3 text-success fs-3"><i class="bi bi-tools"></i></div>
+                    <div>
+                        <h4 class="fw-bold text-main mb-1">Developer Tools & Workflow</h4>
+                        <p class="text-muted small mb-0">Version control, API testing, and basic containerization.</p>
+                    </div>
+                </div>
+
                 <div class="row g-3">
                     {% for skill in tools_skills %}
-                    <div class="col-6">
-                        <div class="glass-card p-3 d-flex align-items-center gap-3">
-                            <i class="{{ skill.icon_class }} fs-3 text-success"></i>
-                            <div>
-                                <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
-                                <small class="text-muted">{{ skill.years_experience }} • {{ skill.level_label }}</small>
+                    <div class="col-12">
+                        <div class="glass-card p-3 d-flex align-items-center justify-content-between hover-lift">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-2 bg-success bg-opacity-10 text-success rounded-3 fs-3">
+                                    <i class="{{ skill.icon_class }}"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold text-main mb-1">{{ skill.name }}</h6>
+                                    <span class="badge bg-success bg-opacity-25 text-success extra-small">{{ skill.level_label }}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25 px-2 py-1 small">
+                                    ⏱️ {{ skill.years_experience }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -126,16 +203,33 @@
                 </div>
             </div>
 
+            <!-- Architecture & Concepts -->
             <div class="col-lg-6">
-                <h4 class="fw-bold mb-4 text-main"><i class="bi bi-bricks text-pink me-2"></i>Architecture & Concepts</h4>
+                <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                    <div class="p-3 bg-danger bg-opacity-10 rounded-3 text-danger fs-3"><i class="bi bi-bricks"></i></div>
+                    <div>
+                        <h4 class="fw-bold text-main mb-1">Architecture & Engineering Concepts</h4>
+                        <p class="text-muted small mb-0">OOP principles, clean architecture, and modular code design.</p>
+                    </div>
+                </div>
+
                 <div class="row g-3">
                     {% for skill in concept_skills %}
-                    <div class="col-6">
-                        <div class="glass-card p-3 d-flex align-items-center gap-3">
-                            <i class="{{ skill.icon_class }} fs-3 text-danger"></i>
-                            <div>
-                                <h6 class="fw-bold text-main mb-0">{{ skill.name }}</h6>
-                                <small class="text-muted">{{ skill.years_experience }} • {{ skill.level_label }}</small>
+                    <div class="col-12">
+                        <div class="glass-card p-3 d-flex align-items-center justify-content-between hover-lift">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-2 bg-danger bg-opacity-10 text-danger rounded-3 fs-3">
+                                    <i class="{{ skill.icon_class }}"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold text-main mb-1">{{ skill.name }}</h6>
+                                    <span class="badge bg-danger bg-opacity-25 text-danger extra-small">{{ skill.level_label }}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25 px-2 py-1 small">
+                                    🎓 {{ skill.years_experience }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -143,6 +237,21 @@
                 </div>
             </div>
         </div>
+
+        <!-- Recruiter Call-to-Action Banner -->
+        <div class="glass-card p-4 p-md-5 text-center position-relative overflow-hidden mt-5" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%); border: 1px solid rgba(129, 140, 248, 0.3);">
+            <h3 class="fw-bold text-main mb-2">Looking for a Junior Software Engineer with these skills?</h3>
+            <p class="text-muted mb-4 max-w-2xl mx-auto">Available for entry-level Software Engineer, Python Developer, and Backend Developer roles.</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="{% url 'resume' %}" class="btn btn-gradient px-4 py-2">
+                    <i class="bi bi-file-earmark-pdf-fill me-2"></i> Download Resume
+                </a>
+                <a href="{% url 'contact' %}" class="btn btn-outline-light px-4 py-2">
+                    <i class="bi bi-send-fill me-2"></i> Get in Touch
+                </a>
+            </div>
+        </div>
+
     </div>
 </section>
 {% endblock %}
