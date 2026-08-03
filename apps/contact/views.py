@@ -92,6 +92,57 @@ def test_smtp(request):
         return HttpResponse(f"❌ Connection failed: {e}", status=500)
 
 
+def test_email_view(request):
+    """Diagnostic view to test email APIs live on Render."""
+    import os, requests
+    from django.http import HttpResponse
+    from .email_utils import get_brevo_api_key, send_via_brevo_api
+
+    brevo_key = get_brevo_api_key()
+    resend_key = (os.getenv('RESEND_API_KEY') or '').strip()
+
+    html = "<h1>📧 Email Diagnostic Test</h1>"
+
+    if brevo_key:
+        html += f"<p><b>Brevo API Key detected:</b> <code>{brevo_key[:10]}...</code> (length={len(brevo_key)})</p>"
+        url = "https://api.brevo.com/v3/smtp/email"
+        headers = {"accept": "application/json", "api-key": brevo_key, "content-type": "application/json"}
+        sender = (os.getenv('BREVO_SENDER_EMAIL') or os.getenv('EMAIL_HOST_USER') or 'pundvyankateshwar@gmail.com').strip()
+        recipient = getattr(settings, 'RECIPIENT_EMAIL', 'pundvyankateshwar@gmail.com')
+
+        payload = {
+            "sender": {"name": "Portfolio Test", "email": sender},
+            "to": [{"email": recipient}],
+            "subject": "Diagnostic Test Email from Vyankateshwar Portfolio",
+            "textContent": f"Test email to verify Brevo delivery to {recipient}."
+        }
+
+        try:
+            resp = requests.post(url, json=payload, headers=headers, timeout=10)
+            if resp.status_code in [200, 201, 202]:
+                html += f"<p style='color:green; font-size:18px;'><b>✅ Brevo API Success (HTTP {resp.status_code}):</b> {resp.text}</p>"
+                html += f"<p>Check inbox/spam at <b>{recipient}</b>!</p>"
+            else:
+                html += f"<p style='color:red; font-size:18px;'><b>❌ Brevo API Error (HTTP {resp.status_code}):</b> {resp.text}</p>"
+                if "sender" in resp.text.lower() or "validated" in resp.text.lower():
+                    html += (
+                        "<div style='background:#fff3cd; padding:15px; border-radius:8px; margin-top:10px;'>"
+                        "<b>💡 How to fix Brevo Sender Error:</b><br>"
+                        "Brevo requires the sender email to be your Brevo account signup email.<br>"
+                        "Add environment variable on Render: <code>BREVO_SENDER_EMAIL</code> set to your Brevo account email!"
+                        "</div>"
+                    )
+        except Exception as ex:
+            html += f"<p style='color:red;'><b>❌ Exception:</b> {ex}</p>"
+    else:
+        html += (
+            "<p style='color:red; font-size:18px;'><b>⚠️ Brevo API Key NOT detected in environment variables.</b></p>"
+            "<p>Make sure you added <code>BREVO_API_KEY</code> on Render under Environment Variables!</p>"
+        )
+
+    return HttpResponse(html)
+
+
 @csrf_exempt
 def subscribe_newsletter(request):
     is_ajax = (
