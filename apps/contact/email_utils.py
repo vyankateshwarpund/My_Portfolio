@@ -7,20 +7,38 @@ from django.core.mail import send_mail
 logger = logging.getLogger(__name__)
 
 
+def get_brevo_api_key():
+    """Detect Brevo API Key under any common environment variable name."""
+    return (
+        os.getenv('BREVO_API_KEY') or
+        os.getenv('BREV_API_KEY') or
+        os.getenv('BREVO_KEY') or
+        os.getenv('BREVO_API') or
+        os.getenv('SENDINBLUE_API_KEY') or
+        ''
+    ).strip()
+
+
 def send_via_brevo_api(subject, recipient_email, message_body):
-    """Sends email via Brevo REST API over HTTPS (Port 443)."""
-    api_key = os.getenv('BREVO_API_KEY') or os.getenv('SENDINBLUE_API_KEY')
+    """Sends email via Brevo REST API over HTTPS (Port 443 - works on Render Free Tier)."""
+    api_key = get_brevo_api_key()
     if not api_key:
+        print("⚠️ Brevo API Key not found in environment variables.")
         return False
 
     url = "https://api.brevo.com/v3/smtp/email"
     headers = {
         "accept": "application/json",
-        "api-key": api_key.strip(),
+        "api-key": api_key,
         "content-type": "application/json"
     }
 
-    sender_email = getattr(settings, 'EMAIL_HOST_USER', 'pundvyankateshwar@gmail.com') or 'pundvyankateshwar@gmail.com'
+    sender_email = (
+        os.getenv('BREVO_SENDER_EMAIL') or
+        os.getenv('EMAIL_HOST_USER') or
+        getattr(settings, 'EMAIL_HOST_USER', 'pundvyankateshwar@gmail.com') or
+        'pundvyankateshwar@gmail.com'
+    ).strip()
 
     payload = {
         "sender": {"name": "Vyankateshwar Pund Portfolio", "email": sender_email},
@@ -47,17 +65,17 @@ def send_via_brevo_api(subject, recipient_email, message_body):
 
 def send_via_resend_api(subject, recipient_email, message_body):
     """Sends email via Resend REST API over HTTPS (Port 443)."""
-    api_key = os.getenv('RESEND_API_KEY')
+    api_key = (os.getenv('RESEND_API_KEY') or '').strip()
     if not api_key:
         return False
 
     url = "https://api.resend.com/emails"
     headers = {
-        "Authorization": f"Bearer {api_key.strip()}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
 
-    sender_email = os.getenv('RESEND_FROM_EMAIL', 'onboarding@resend.dev')
+    sender_email = os.getenv('RESEND_FROM_EMAIL', 'onboarding@resend.dev').strip()
 
     payload = {
         "from": f"Vyankateshwar Portfolio <{sender_email}>",
@@ -119,8 +137,8 @@ def send_via_formspree(name, email, subject, message):
 def send_contact_emails_synchronously(contact_msg_id, name, email, subject, message):
     """
     Production-grade email dispatcher for Render.
-    Attempts HTTPS API providers (Resend / Brevo / Formspree) over Port 443 first,
-    then falls back to Django SMTP with strict fail_silently=False and sent_count verification.
+    Attempts HTTPS API providers (Brevo / Resend / Formspree) over Port 443 first,
+    then falls back to Django SMTP.
     """
     admin_subject = f"🚀 New Portfolio Message from {name}: {subject}"
     admin_body = (
@@ -153,24 +171,28 @@ def send_contact_emails_synchronously(contact_msg_id, name, email, subject, mess
         'errors': []
     }
 
-    # 1. Try Resend REST API (HTTPS Port 443)
-    if os.getenv('RESEND_API_KEY'):
-        status_report['backend_used'] = 'resend_api'
-        status_report['admin_sent'] = send_via_resend_api(admin_subject, admin_recipient, admin_body)
-        status_report['user_sent'] = send_via_resend_api(user_subject, email, user_body)
-        if status_report['admin_sent'] or status_report['user_sent']:
-            return status_report
-
-    # 2. Try Brevo REST API (HTTPS Port 443)
-    if os.getenv('BREVO_API_KEY') or os.getenv('SENDINBLUE_API_KEY'):
+    # 1. Try Brevo REST API (Checks BREVO_API_KEY, BREV_API_KEY, BREVO_KEY, SENDINBLUE_API_KEY)
+    brevo_key = get_brevo_api_key()
+    if brevo_key:
+        print(f"📧 Brevo API Key detected (len={len(brevo_key)}). Sending via Brevo HTTPS API...")
         status_report['backend_used'] = 'brevo_api'
         status_report['admin_sent'] = send_via_brevo_api(admin_subject, admin_recipient, admin_body)
         status_report['user_sent'] = send_via_brevo_api(user_subject, email, user_body)
         if status_report['admin_sent'] or status_report['user_sent']:
             return status_report
 
-    # 3. Try Formspree HTTP Relay (HTTPS Port 443)
+    # 2. Try Resend REST API
+    if os.getenv('RESEND_API_KEY'):
+        print("📧 Resend API Key detected. Sending via Resend HTTPS API...")
+        status_report['backend_used'] = 'resend_api'
+        status_report['admin_sent'] = send_via_resend_api(admin_subject, admin_recipient, admin_body)
+        status_report['user_sent'] = send_via_resend_api(user_subject, email, user_body)
+        if status_report['admin_sent'] or status_report['user_sent']:
+            return status_report
+
+    # 3. Try Formspree HTTP Relay
     if os.getenv('FORMSPREE_URL') or os.getenv('FORMSPREE_ID'):
+        print("📧 Formspree endpoint detected. Sending via Formspree HTTP...")
         status_report['backend_used'] = 'formspree'
         sent_fs = send_via_formspree(name, email, subject, message)
         status_report['admin_sent'] = sent_fs
@@ -179,6 +201,7 @@ def send_contact_emails_synchronously(contact_msg_id, name, email, subject, mess
 
     # 4. Fallback to standard Django SMTP / Console backend
     status_report['backend_used'] = str(getattr(settings, 'EMAIL_BACKEND', 'smtp'))
+    print(f"⚠️ No HTTP API keys found. Falling back to Django Backend ({status_report['backend_used']})...")
 
     # Send admin notification
     try:
