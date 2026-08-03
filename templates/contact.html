@@ -1,92 +1,170 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Contact | Vyankateshwar Pund{% endblock %}
+{% block title %}Contact & Collaboration | Vyankateshwar Pund{% endblock %}
 
 {% block content %}
 <section class="py-5 mt-5">
     <div class="container">
+        <!-- Page Header -->
         <div class="text-center mb-5">
-            <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill fw-semibold">Get In Touch</span>
-            <h2 class="section-title mt-2">Contact & Collaboration</h2>
-            <p class="section-subtitle">Have a job opportunity or backend engineering project? Let's connect.</p>
+            <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill fw-bold border border-warning border-opacity-25 fs-7">
+                <i class="bi bi-chat-left-dots-fill me-1"></i> Get In Touch
+            </span>
+            <h1 class="section-title mt-3 mb-2 display-6">Contact & Collaboration</h1>
+            <p class="section-subtitle">Have a job opportunity, Python/Django project, or backend engineering role? Let's connect.</p>
         </div>
 
         <div class="row g-4 justify-content-center">
-            <!-- Contact Cards -->
+            <!-- Left Contact Information Cards -->
             <div class="col-lg-4">
-                <div class="d-flex flex-column gap-4">
-                    <div class="glass-card d-flex align-items-center gap-3">
-                        <div class="fs-2 text-warning p-3 bg-warning bg-opacity-10 rounded-3"><i class="bi bi-envelope-fill"></i></div>
-                        <div>
-                            <h6 class="fw-bold text-white mb-1">Email</h6>
-                            <a href="mailto:{{ profile.email|default:'pundvyankateshwar@gmail.com' }}" class="text-muted text-decoration-none small">{{ profile.email|default:"pundvyankateshwar@gmail.com" }}</a>
+                <div class="d-flex flex-column gap-3">
+                    
+                    <!-- Email Card -->
+                    <div class="glass-card p-3 p-md-4 d-flex align-items-center gap-3 hover-lift border border-secondary border-opacity-25">
+                        <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-3">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h6 class="fw-bold text-main mb-1 fs-6">Email Address</h6>
+                            <a href="mailto:{{ profile.email|default:'pundvyankateshwar@gmail.com' }}" class="text-muted text-decoration-none fs-6 text-truncate d-block hover-primary">
+                                {{ profile.email|default:"pundvyankateshwar@gmail.com" }}
+                            </a>
                         </div>
                     </div>
 
-                    <div class="glass-card d-flex align-items-center gap-3">
-                        <div class="fs-2 text-info p-3 bg-info bg-opacity-10 rounded-3"><i class="bi bi-telephone-fill"></i></div>
+                    <!-- Phone Card -->
+                    <div class="glass-card p-3 p-md-4 d-flex align-items-center gap-3 hover-lift border border-secondary border-opacity-25">
+                        <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 fs-3">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
                         <div>
-                            <h6 class="fw-bold text-white mb-1">Phone</h6>
-                            <a href="tel:{{ profile.phone|default:'+918263986554' }}" class="text-muted text-decoration-none small">{{ profile.phone|default:"+91 8263986554" }}</a>
+                            <h6 class="fw-bold text-main mb-1 fs-6">Phone / WhatsApp</h6>
+                            <a href="tel:{{ profile.phone|default:'+918263986554' }}" class="text-muted text-decoration-none fs-6 hover-primary">
+                                {{ profile.phone|default:"+91 8263986554" }}
+                            </a>
                         </div>
                     </div>
 
-                    <div class="glass-card d-flex align-items-center gap-3">
-                        <div class="fs-2 text-success p-3 bg-success bg-opacity-10 rounded-3"><i class="bi bi-geo-alt-fill"></i></div>
+                    <!-- Location Card -->
+                    <div class="glass-card p-3 p-md-4 d-flex align-items-center gap-3 hover-lift border border-secondary border-opacity-25">
+                        <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 fs-3">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
                         <div>
-                            <h6 class="fw-bold text-white mb-1">Location</h6>
-                            <span class="text-muted small">{{ profile.location|default:"Amravati, Maharashtra, India" }}</span>
+                            <h6 class="fw-bold text-main mb-1 fs-6">Location</h6>
+                            <span class="text-muted fs-6">
+                                {{ profile.location|default:"Amravati, Maharashtra, India" }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="glass-card d-flex align-items-center gap-3">
-                        <div class="fs-2 text-primary p-3 bg-primary bg-opacity-10 rounded-3"><i class="bi bi-linkedin"></i></div>
+                    <!-- LinkedIn Card -->
+                    <div class="glass-card p-3 p-md-4 d-flex align-items-center gap-3 hover-lift border border-secondary border-opacity-25">
+                        <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3">
+                            <i class="bi bi-linkedin"></i>
+                        </div>
                         <div>
-                            <h6 class="fw-bold text-white mb-1">LinkedIn</h6>
-                            <a href="{{ profile.linkedin_url }}" target="_blank" class="text-muted text-decoration-none small">View Profile</a>
+                            <h6 class="fw-bold text-main mb-1 fs-6">LinkedIn Profile</h6>
+                            <a href="{{ profile.linkedin_url|default:'https://linkedin.com/in/vyankateshwar-pund-7a654632b' }}" target="_blank" class="text-primary text-decoration-none fs-6 hover-primary">
+                                View Profile <i class="bi bi-box-arrow-up-right ms-1 fs-7"></i>
+                            </a>
                         </div>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Contact Form -->
+            <!-- Right Contact Form Section -->
             <div class="col-lg-8">
-                <div class="glass-card">
-                    <h4 class="fw-bold text-white mb-4">Send a Message</h4>
+                <div class="glass-card p-4 p-md-5 border border-secondary border-opacity-25 shadow-lg">
+                    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                        <div>
+                            <h3 class="fw-bold text-main mb-1 fs-4"><i class="bi bi-send-fill text-primary me-2"></i>Send a Direct Message</h3>
+                            <p class="text-muted fs-6 mb-0">Fill out the form below to drop me a message directly in my inbox.</p>
+                        </div>
+                    </div>
 
+                    <!-- Dynamic Success/Error Alert Container -->
                     <div id="contact-alert" class="d-none mb-4"></div>
 
                     <form id="contact-form" action="{% url 'contact' %}" method="POST">
                         {% csrf_token %}
                         <div class="row g-3">
+                            <!-- Name Field -->
                             <div class="col-md-6">
-                                <label class="form-label text-muted small fw-semibold">Your Name *</label>
-                                <input type="text" name="name" class="form-control glass-card border-secondary text-white" placeholder="John Doe" required>
+                                <label class="form-label text-main fs-6 fw-semibold mb-2">Your Name <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-secondary border-opacity-50 text-muted px-3" style="height: 46px; border-top-left-radius: 12px; border-bottom-left-radius: 12px;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </span>
+                                    <input type="text" 
+                                           name="name" 
+                                           class="form-control text-main border-secondary border-opacity-50 px-3" 
+                                           placeholder="e.g. John Doe" 
+                                           style="height: 46px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; font-size: 1rem;"
+                                           required>
+                                </div>
                             </div>
 
+                            <!-- Email Field -->
                             <div class="col-md-6">
-                                <label class="form-label text-muted small fw-semibold">Your Email *</label>
-                                <input type="email" name="email" class="form-control glass-card border-secondary text-white" placeholder="john@example.com" required>
+                                <label class="form-label text-main fs-6 fw-semibold mb-2">Your Email <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-secondary border-opacity-50 text-muted px-3" style="height: 46px; border-top-left-radius: 12px; border-bottom-left-radius: 12px;">
+                                        <i class="bi bi-envelope-fill"></i>
+                                    </span>
+                                    <input type="email" 
+                                           name="email" 
+                                           class="form-control text-main border-secondary border-opacity-50 px-3" 
+                                           placeholder="e.g. john@example.com" 
+                                           style="height: 46px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; font-size: 1rem;"
+                                           required>
+                                </div>
                             </div>
 
+                            <!-- Subject Field -->
                             <div class="col-12">
-                                <label class="form-label text-muted small fw-semibold">Subject *</label>
-                                <input type="text" name="subject" class="form-control glass-card border-secondary text-white" placeholder="Job Opportunity / Project Inquiry" required>
+                                <label class="form-label text-main fs-6 fw-semibold mb-2">Subject <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-secondary border-opacity-50 text-muted px-3" style="height: 46px; border-top-left-radius: 12px; border-bottom-left-radius: 12px;">
+                                        <i class="bi bi-chat-square-text-fill"></i>
+                                    </span>
+                                    <input type="text" 
+                                           name="subject" 
+                                           class="form-control text-main border-secondary border-opacity-50 px-3" 
+                                           placeholder="e.g. Job Opportunity / Project Inquiry" 
+                                           style="height: 46px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; font-size: 1rem;"
+                                           required>
+                                </div>
                             </div>
 
+                            <!-- Message Field -->
                             <div class="col-12">
-                                <label class="form-label text-muted small fw-semibold">Message *</label>
-                                <textarea name="message" rows="5" class="form-control glass-card border-secondary text-white" placeholder="Hello Vyankateshwar, I reviewed your portfolio..." required></textarea>
+                                <label class="form-label text-main fs-6 fw-semibold mb-2">Message <span class="text-danger">*</span></label>
+                                <textarea name="message" 
+                                          rows="5" 
+                                          class="form-control text-main border-secondary border-opacity-50 p-3" 
+                                          placeholder="Hello Vyankateshwar, I reviewed your portfolio..." 
+                                          style="border-radius: 12px; font-size: 1rem; resize: vertical;"
+                                          required></textarea>
                             </div>
 
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-gradient px-4">
-                                    <i class="bi bi-send-fill me-2"></i> Send Message
+                            <!-- Submit Button -->
+                            <div class="col-12 pt-2">
+                                <button type="submit" id="contact-submit-btn" class="btn btn-gradient w-100 py-3 fs-6 fw-bold d-flex align-items-center justify-content-center gap-2" style="border-radius: 12px;">
+                                    <i class="bi bi-send-fill"></i> Send Message
                                 </button>
                             </div>
                         </div>
                     </form>
+
+                    <!-- Instant Delivery Guarantee Banner -->
+                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
+                        <span class="fs-7 text-muted fw-medium">
+                            <i class="bi bi-shield-check text-success me-1"></i> Instant Delivery Guarantee • Direct Notification Sent to Vyankateshwar
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
