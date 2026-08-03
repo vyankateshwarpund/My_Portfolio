@@ -1,3 +1,4 @@
+import os
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
@@ -19,8 +20,8 @@ urlpatterns = [
 
     # Serve media files in both development AND production (Render free tier)
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
-    # Serve static files fallback in production if WhiteNoise misses any path
-    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+    # Serve static files directly from static folder in both development AND production
+    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static')}),
 ]
 
 if settings.DEBUG:
