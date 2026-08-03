@@ -19,6 +19,8 @@ urlpatterns = [
 
     # Serve media files in both development AND production (Render free tier)
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    # Serve static files fallback in production if WhiteNoise misses any path
+    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]
 
 if settings.DEBUG:
