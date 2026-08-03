@@ -488,3 +488,17 @@ input::placeholder, textarea::placeholder {
   justify-content: center;
 }
 
+/* Typography & Font Utility Helpers */
+.fs-7 {
+  font-size: 0.85rem !important;
+}
+
+.text-main {
+  color: var(--text-main) !important;
+}
+
+.leading-relaxed {
+  line-height: 1.85 !important;
+}
+
+
