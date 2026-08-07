@@ -501,4 +501,208 @@ input::placeholder, textarea::placeholder {
   line-height: 1.85 !important;
 }
 
+/* ==========================================================================
+   Project Card Showcase & Theme Adaptation
+   ========================================================================== */
+.project-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  border-radius: 16px;
+  border: 1px solid var(--border-glass) !important;
+}
+
+/* Light theme card background and border refinement */
+[data-theme="light"] .project-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-glow) !important;
+  box-shadow: 0 20px 45px -10px rgba(129, 140, 248, 0.35);
+}
+
+[data-theme="light"] .project-card:hover {
+  border-color: rgba(79, 70, 229, 0.5) !important;
+  box-shadow: 0 16px 35px -5px rgba(79, 70, 229, 0.18) !important;
+}
+
+.project-img-wrapper {
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 12px;
+}
+
+.project-img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-card:hover .project-img {
+  transform: scale(1.08);
+}
+
+.project-img-placeholder {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px dashed var(--border-glass);
+}
+
+/* Theme-Adaptive Project Title: Black in Light theme, White in Dark theme */
+.project-card-title {
+  font-weight: 700;
+  transition: color 0.25s ease;
+}
+
+[data-theme="light"] .project-card-title {
+  color: #0f172a !important; /* Black / Dark Navy in light mode */
+}
+
+[data-theme="dark"] .project-card-title {
+  color: #ffffff !important; /* White in dark mode */
+}
+
+.project-card:hover .project-card-title {
+  color: var(--accent-primary) !important;
+}
+
+/* Description Readability (15px, Line Clamped 2-3 lines) */
+.project-card-desc {
+  font-size: 0.92rem; /* ~14.8-15px */
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-theme="light"] .project-card-desc {
+  color: #334155 !important;
+}
+
+[data-theme="dark"] .project-card-desc {
+  color: #cbd5e1 !important;
+}
+
+/* Vibrant Tech Badge Tags */
+.tech-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.28rem 0.65rem;
+  border-radius: 20px;
+  background: rgba(129, 140, 248, 0.14);
+  color: #a5b4fc;
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  transition: all 0.25s ease;
+}
+
+.tech-tag-badge:nth-child(2n) {
+  background: rgba(56, 189, 248, 0.14);
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.tech-tag-badge:nth-child(3n) {
+  background: rgba(244, 114, 182, 0.14);
+  color: #fbcfe8;
+  border-color: rgba(244, 114, 182, 0.3);
+}
+
+.tech-tag-badge:nth-child(4n) {
+  background: rgba(168, 85, 247, 0.14);
+  color: #e9d5ff;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.tech-tag-badge:hover {
+  transform: translateY(-1.5px);
+  filter: brightness(1.2);
+}
+
+/* Light Theme Badges Adaptation */
+[data-theme="light"] .tech-tag-badge {
+  background: rgba(79, 70, 229, 0.08);
+  color: #4338ca;
+  border-color: rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="light"] .tech-tag-badge:nth-child(2n) {
+  background: rgba(2, 132, 199, 0.08);
+  color: #0369a1;
+  border-color: rgba(2, 132, 199, 0.25);
+}
+
+[data-theme="light"] .tech-tag-badge:nth-child(3n) {
+  background: rgba(219, 39, 119, 0.08);
+  color: #be185d;
+  border-color: rgba(219, 39, 119, 0.25);
+}
+
+/* ==========================================================================
+   Footer Enhancements
+   ========================================================================== */
+.footer-heading {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  color: var(--accent-primary) !important;
+  transform: translateX(4px);
+}
+
+/* Social Icon Buttons (44px x 44px with Hover Effects) */
+.social-icon-btn {
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 1.15rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.social-icon-btn:hover {
+  transform: translateY(-4px) scale(1.1);
+}
+
+.social-github:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3) !important;
+}
+
+.social-linkedin:hover {
+  background: rgba(10, 102, 194, 0.3) !important;
+  color: #38bdf8 !important;
+  border-color: #0a66c2 !important;
+  box-shadow: 0 8px 20px rgba(10, 102, 194, 0.4) !important;
+}
+
+.social-email:hover {
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #f87171 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4) !important;
+}
+
+.social-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.25) !important;
+  color: #4ade80 !important;
+  border-color: #25d366 !important;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4) !important;
+}
+
+
 

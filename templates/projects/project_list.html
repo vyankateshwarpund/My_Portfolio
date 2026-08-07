@@ -4,77 +4,97 @@
 {% block title %}Projects | Vyankateshwar Pund{% endblock %}
 
 {% block content %}
-<section class="py-5 mt-5">
+<section class="py-5 mt-4">
     <div class="container">
-        <div class="text-center mb-5">
-            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">Portfolio Showcase</span>
-            <h2 class="section-title mt-2">Projects & Code Repositories</h2>
-            <p class="section-subtitle">Search, filter by category or technology, and explore live demos and source code.</p>
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold border border-primary border-opacity-25">Portfolio Showcase</span>
+            <h2 class="section-title mt-2 display-6 fw-bold">Projects & Code Repositories</h2>
+            <p class="section-subtitle text-muted">Search, filter by category or technology, and explore live demos and source code.</p>
         </div>
 
-        <!-- Filter & Search Bar -->
-        <div class="glass-card mb-5">
-            <form method="GET" action="{% url 'project_list' %}" class="row g-3 align-items-center">
-                <div class="col-md-5">
+        <!-- Filter & Search Bar (Smaller 38px input height, sleek compact layout) -->
+        <div class="glass-card p-3 mb-4 shadow-sm border border-secondary border-opacity-25">
+            <form method="GET" action="{% url 'project_list' %}" class="row g-2 align-items-center">
+                <!-- Search Input -->
+                <div class="col-lg-6 col-md-5">
                     <div class="input-group">
-                        <span class="input-group-text bg-transparent border-secondary text-muted"><i class="bi bi-search"></i></span>
-                        <input type="text" name="q" value="{{ search_query }}" class="form-control glass-card border-secondary text-white" placeholder="Search projects by title or feature...">
+                        <span class="input-group-text bg-transparent border-secondary border-opacity-50 text-muted px-2.5" style="height: 38px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">
+                            <i class="bi bi-search fs-6"></i>
+                        </span>
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control glass-card border-secondary border-opacity-50" style="height: 38px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; font-size: 0.88rem;" placeholder="Search projects by title, tech, or feature...">
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select name="category" class="form-select glass-card border-secondary text-white">
+
+                <!-- Category Select -->
+                <div class="col-lg-3 col-md-4">
+                    <select name="category" class="form-select glass-card border-secondary border-opacity-50" style="height: 38px; border-radius: 8px; font-size: 0.88rem;">
                         <option value="">All Categories</option>
                         {% for cat in categories %}
                         <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-gradient w-100"><i class="bi bi-funnel me-1"></i> Filter</button>
-                    <a href="{% url 'project_list' %}" class="btn btn-glass"><i class="bi bi-arrow-clockwise"></i></a>
+
+                <!-- Action Buttons -->
+                <div class="col-lg-3 col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-gradient flex-grow-1 d-inline-flex align-items-center justify-content-center" style="height: 38px; border-radius: 8px; font-size: 0.88rem; padding: 0 1rem;"><i class="bi bi-funnel me-1.5"></i> Filter</button>
+                    <a href="{% url 'project_list' %}" class="btn btn-glass d-inline-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border-radius: 8px;" title="Reset filters"><i class="bi bi-arrow-clockwise fs-6"></i></a>
                 </div>
             </form>
         </div>
 
-        <!-- Projects Grid -->
-        <div class="row g-4">
+        <!-- Projects Grid (Compact horizontal spacing gx-3) -->
+        <div class="row gx-3 gy-4">
             {% for project in projects %}
             <div class="col-lg-4 col-md-6">
-                <div class="glass-card h-100 d-flex flex-column">
-                    <div class="position-relative overflow-hidden rounded-3 mb-3" style="height:200px; background:#1e293b;">
+                <div class="glass-card project-card h-100 d-flex flex-column p-3.5">
+                    <!-- Project Thumbnail / Screenshot with Hover Zoom -->
+                    <div class="position-relative overflow-hidden rounded-3 mb-3 project-img-wrapper" style="height:200px;">
                         {% if project.featured_image %}
-                        <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="w-100 h-100 object-fit-cover">
+                        <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="w-100 h-100 object-fit-cover project-img">
                         {% else %}
-                        <div class="w-100 h-100 d-flex align-items-center justify-content-center gradient-text fs-1 fw-bold opacity-50">
-                            <i class="bi bi-code-square"></i>
+                        <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center project-img-placeholder">
+                            <i class="bi bi-code-square fs-1 text-primary mb-2 opacity-75"></i>
+                            <span class="small text-muted fw-semibold">{{ project.title }}</span>
                         </div>
                         {% endif %}
-                        <span class="position-absolute top-0 end-0 m-3 badge bg-dark bg-opacity-75 border border-secondary text-info">
-                            {{ project.category.name|default:"Backend" }}
+                        <span class="position-absolute top-0 end-0 m-2.5 badge bg-dark bg-opacity-80 backdrop-blur border border-secondary text-cyan px-2.5 py-1.5 fw-semibold shadow-sm rounded-pill" style="font-size: 0.75rem;">
+                            {{ project.category.name|default:"Software Engineering" }}
                         </span>
                     </div>
 
-                    <h5 class="fw-bold mb-2 text-white">
-                        <a href="{% url 'project_detail' slug=project.slug %}" class="text-white text-decoration-none hover-primary">
+                    <!-- Bold Project Title (Theme-adaptive: Black in Light mode, White in Dark mode) -->
+                    <h5 class="fw-bold mb-2 fs-5">
+                        <a href="{% url 'project_detail' slug=project.slug %}" class="text-decoration-none project-card-title">
                             {{ project.title }}
                         </a>
                     </h5>
-                    <p class="text-muted small flex-grow-1 mb-3">{{ project.short_description }}</p>
 
-                    <div class="mb-3 d-flex flex-wrap gap-1">
+                    <!-- Description Readability (15px, line-clamped 2-3 lines) -->
+                    <p class="project-card-desc text-muted flex-grow-1 mb-3">
+                        {{ project.short_description }}
+                    </p>
+
+                    <!-- Colorful Tech Badges -->
+                    <div class="mb-3 d-flex flex-wrap gap-1.5">
                         {% for tech in project.tech_stack.all %}
-                        <span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary small">{{ tech.name }}</span>
+                        <span class="tech-tag-badge"><i class="{{ tech.icon_class|default:'bi bi-cpu' }} me-1"></i>{{ tech.name }}</span>
+                        {% empty %}
+                        <span class="tech-tag-badge"><i class="bi bi-filetype-py me-1"></i>Python</span>
+                        <span class="tech-tag-badge"><i class="bi bi-box-seam me-1"></i>Django</span>
                         {% endfor %}
                     </div>
 
+                    <!-- Action Buttons: Primary Gradient Details CTA & Outlined Code Button -->
                     <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25 mt-auto">
                         <div class="d-flex gap-2">
-                            <a href="{% url 'project_detail' slug=project.slug %}" class="btn btn-glass btn-sm"><i class="bi bi-eye"></i> Details</a>
+                            <a href="{% url 'project_detail' slug=project.slug %}" class="btn btn-gradient btn-sm px-3.5 py-1.5 shadow-sm rounded-pill d-inline-flex align-items-center" style="font-size: 0.85rem;"><i class="bi bi-arrow-right-circle me-1.5"></i> Details</a>
                             {% if project.github_url %}
-                            <a href="{{ project.github_url }}" target="_blank" class="btn btn-glass btn-sm"><i class="bi bi-github"></i> Code</a>
+                            <a href="{{ project.github_url }}" target="_blank" class="btn btn-glass btn-sm px-3 py-1.5 rounded-pill d-inline-flex align-items-center" style="font-size: 0.85rem;"><i class="bi bi-github me-1.5"></i> Code</a>
                             {% endif %}
                         </div>
-                        <span class="small text-muted"><i class="bi bi-eye-fill me-1"></i>{{ project.views_count }} views</span>
+                        <span class="small text-muted fw-medium d-flex align-items-center" style="font-size: 0.8rem;"><i class="bi bi-eye-fill me-1 text-primary"></i>{{ project.views_count }}</span>
                     </div>
                 </div>
             </div>
@@ -82,9 +102,9 @@
             <div class="col-12 text-center py-5">
                 <div class="glass-card p-5">
                     <i class="bi bi-folder-x fs-1 text-muted d-block mb-3"></i>
-                    <h5 class="text-white">No projects found matching your criteria</h5>
+                    <h5 class="fw-bold">No projects found matching your criteria</h5>
                     <p class="text-muted">Try clearing your filters or searching for a different term.</p>
-                    <a href="{% url 'project_list' %}" class="btn btn-gradient mt-2">Reset Filters</a>
+                    <a href="{% url 'project_list' %}" class="btn btn-gradient mt-2 px-4 py-2 rounded-pill"><i class="bi bi-arrow-clockwise me-1"></i> Reset Filters</a>
                 </div>
             </div>
             {% endfor %}
@@ -93,13 +113,13 @@
         <!-- Pagination -->
         {% if is_paginated %}
         <nav class="mt-5">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center gap-1">
                 {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link glass-card border-secondary text-white" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                <li class="page-item"><a class="page-link glass-card border-secondary text-main rounded-3 px-3 py-2" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
                 {% endif %}
-                <li class="page-item disabled"><span class="page-link glass-card border-secondary text-primary">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                <li class="page-item disabled"><span class="page-link glass-card border-secondary text-primary rounded-3 px-3 py-2 fw-semibold">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
                 {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link glass-card border-secondary text-white" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link glass-card border-secondary text-main rounded-3 px-3 py-2" href="?page={{ page_obj.next_page_number }}">Next</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -107,3 +127,4 @@
     </div>
 </section>
 {% endblock %}
+
