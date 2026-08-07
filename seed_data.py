@@ -106,6 +106,21 @@ def run_seed():
         )
     print("Fresher Skills metrics updated.")
 
+    # Services
+    Service.objects.all().delete()
+    services_data = [
+        ("Full Stack Web Development", "bi bi-layers", "End-to-end modern web applications with Bootstrap 5, JS & Django backend.", "Developing dynamic, responsive web applications seamlessly connected to Python/Django backends.", 1),
+        ("Backend Development", "bi bi-server", "High-performance backend systems built with Python & Django.", "Designing robust, clean architecture backends with Django ORM, custom middleware, and optimized SQL performance.", 2),
+        ("Frontend Development", "bi bi-layout-text-window-reverse", "Responsive, modern UI interfaces using Bootstrap 5, HTML5/CSS3 & JavaScript.", "Crafting clean, accessible, dark-mode enabled responsive web layouts with interactive user experience.", 3),
+        ("REST API Development", "bi bi-code-slash", "Scalable, secure RESTful APIs built with Django REST Framework.", "Creating clear API endpoints with Swagger/OpenAPI documentation, token authentication, and JSON serialization.", 4),
+        ("Database Design & Optimization", "bi bi-database-gear", "MySQL database schema modeling and SQL query tuning.", "Designing normalized database tables, indexing strategy, foreign key constraints, and efficient query execution.", 5),
+        ("Python Developer", "bi bi-filetype-py", "Custom Python scripts, automation, data handling, and object-oriented backend logic.", "Writing clean, standard-compliant Python code for business logic, algorithms, and backend feature development.", 6),
+    ]
+    for title, icon, short_desc, full_desc, order in services_data:
+        Service.objects.create(
+            title=title, icon_class=icon, short_description=short_desc, full_description=full_desc, order=order
+        )
+
     print("Database successfully updated to Fresher persona with 3 Months Internship Experience!")
 
 if __name__ == '__main__':
