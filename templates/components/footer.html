@@ -46,7 +46,6 @@
                     <li class="mb-2"><a href="{% url 'resume' %}" class="text-muted text-decoration-none">Resume Preview</a></li>
                     <li class="mb-2"><a href="{% url 'certificates' %}" class="text-muted text-decoration-none">Certificates</a></li>
                     <li class="mb-2"><a href="{% url 'achievements' %}" class="text-muted text-decoration-none">Achievements</a></li>
-                    <li class="mb-2"><a href="{% url 'blog_list' %}" class="text-muted text-decoration-none">Tech Blog</a></li>
                     {% if request.user.is_authenticated and request.user.is_staff %}
                     <li class="mb-2"><a href="{% url 'admin_dashboard' %}" class="text-muted text-decoration-none">Analytics Dashboard</a></li>
                     {% endif %}

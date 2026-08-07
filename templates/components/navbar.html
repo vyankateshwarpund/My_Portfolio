@@ -15,7 +15,6 @@
                 <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'skills_list' %}active{% endif %}" href="{% url 'skills_list' %}">Skills</a></li>
                 <li class="nav-item"><a class="nav-link {% if 'projects' in request.path %}active{% endif %}" href="{% url 'project_list' %}">Projects</a></li>
                 <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'services' %}">Services</a></li>
-                <li class="nav-item"><a class="nav-link {% if 'blogs' in request.path %}active{% endif %}" href="{% url 'blog_list' %}">Blog</a></li>
                 <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'certificates' %}active{% endif %}" href="{% url 'certificates' %}">Certificates</a></li>
                 <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a></li>
                 <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'resume' %}">Resume</a></li>
