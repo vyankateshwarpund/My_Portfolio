@@ -15,10 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
 function initPreloader() {
     const preloader = document.getElementById('preloader');
     if (!preloader) return;
-    setTimeout(() => {
+    const hidePreloader = () => {
         preloader.style.opacity = '0';
         preloader.style.visibility = 'hidden';
-    }, 700);
+        preloader.style.pointerEvents = 'none';
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 500);
+    };
+    setTimeout(hidePreloader, 400);
 }
 
 // Theme Switcher (Dark/Light Mode)
@@ -126,7 +131,7 @@ function initParticles() {
         ctx.strokeStyle = isLight ? 'rgba(79, 70, 229, 0.08)' : 'rgba(99, 102, 241, 0.12)';
 
         for (let i = 0; i < particles.length; i++) {
-            p = particles[i];
+            const p = particles[i];
             p.x += p.vx;
             p.y += p.vy;
 
@@ -138,7 +143,7 @@ function initParticles() {
             ctx.fill();
 
             for (let j = i + 1; j < particles.length; j++) {
-                p2 = particles[j];
+                const p2 = particles[j];
                 const dx = p.x - p2.x;
                 const dy = p.y - p2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
