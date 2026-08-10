@@ -121,7 +121,51 @@ def run_seed():
             title=title, icon_class=icon, short_description=short_desc, full_description=full_desc, order=order
         )
 
-    print("Database successfully updated to Fresher persona with 3 Months Internship Experience!")
+    # Projects & Technologies
+    cat_cms, _ = ProjectCategory.objects.get_or_create(name='Portfolio & CMS')
+    cat_api, _ = ProjectCategory.objects.get_or_create(name='REST API')
+    cat_web, _ = ProjectCategory.objects.get_or_create(name='Web Application')
+
+    tech_names = ['Python', 'Django', 'Django REST Framework', 'MySQL', 'Docker', 'Bootstrap 5', 'JavaScript']
+    tech_objs = [Technology.objects.get_or_create(name=t, defaults={'icon_class': 'bi bi-box'})[0] for t in tech_names]
+
+    proj1, _ = Project.objects.update_or_create(
+        id=3,
+        defaults={
+            'title': 'Enterprise Software Engineer Portfolio & Analytics',
+            'slug': 'enterprise-software-engineer-portfolio-analytics',
+            'short_description': 'Database-driven enterprise portfolio platform featuring Recruiter Analytics Dashboard, PWA, Docker, and DRF REST APIs.',
+            'full_details': (
+                'A state-of-the-art production personal portfolio built with Django, DRF, MySQL, Docker, and Bootstrap 5. '
+                'Includes an interactive Recruiter Analytics Dashboard, PWA support, GitHub API stats integration, '
+                'visitor IP tracking middleware, dynamic blog engine with Markdown support, and downloadable resume tracker.'
+            ),
+            'github_url': 'https://github.com/vyankateshwarpund/My_Portfolio',
+            'live_demo_url': 'http://localhost:8000/',
+            'case_study_url': '',
+            'category': cat_cms,
+            'status_badge': 'Production-Ready',
+            'api_calls_count': '1000+ API Calls',
+            'db_tables_count': '36 DB Tables',
+            'apis_count': '40+ APIs',
+            'features': (
+                '• Recruiter & Admin Analytics Dashboard with Chart.js\n'
+                '• Dark/Light Glassmorphic theme switcher with CSS variables\n'
+                '• Django REST Framework APIs for all resources\n'
+                '• Visitor tracking middleware & contact email auto-responder\n'
+                '• Containerized deployment support with Docker & Docker Compose\n'
+                '• Progressive Web App (PWA) with offline caching support'
+            ),
+            'views_count': 810,
+            'likes_count': 89,
+            'is_featured': True,
+            'order': 1
+        }
+    )
+    proj1.tech_stack.set(tech_objs)
+
+    print("Database successfully updated with Enterprise Portfolio project links and metrics!")
 
 if __name__ == '__main__':
     run_seed()
+
