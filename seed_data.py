@@ -46,14 +46,18 @@ def run_seed():
                 "engineering teams where I can leverage my Python/Django skills and contribute to scalable web applications."
             ),
             'profile_image': 'profile/vyankateshwar_profile.jpg',
-            'projects_completed_count': 8,
+            'projects_completed_count': 4,
             'internships_count': 1,
-            'github_contributions_count': 600,
-            'technologies_count': 15,
+            'github_contributions_count': 520,
+            'technologies_count': 20,
             'hours_coding_count': 500,
             'years_experience': '3 Months (Internship)',
         }
     )
+    profile.projects_completed_count = 4
+    profile.github_contributions_count = 520
+    profile.technologies_count = 20
+    profile.hours_coding_count = 500
     profile.title_roles = 'Fresher Software Engineer | Python Developer | Django Backend Developer | Python Full Stack Developer'
     profile.years_experience = '3 Months (Internship)'
     profile.about_summary = (

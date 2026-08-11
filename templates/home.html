@@ -71,7 +71,7 @@
             <div class="col-6 col-sm-4 col-lg-2">
                 <div class="glass-card stat-box h-100">
                     <div class="stat-icon">🚀</div>
-                    <div class="stat-number counter-value" data-target="3" data-suffix="+">0</div>
+                    <div class="stat-number counter-value" data-target="{{ profile.projects_completed_count|default:4 }}" data-suffix="+">0</div>
                     <div class="small theme-sub-text fw-bold">Projects Built</div>
                 </div>
             </div>
@@ -110,23 +110,28 @@
 <!-- Featured SaaS Projects Section -->
 <section class="py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">SaaS Architecture & Code</span>
-            <h2 class="section-title mt-2">Featured Software Projects</h2>
-            <p class="section-subtitle">Production-grade systems built with REST APIs, authentication, and database schemas.</p>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">Real Architecture & Code</span>
+                <h2 class="section-title mt-2 mb-0">Featured Software Projects</h2>
+                <p class="section-subtitle mb-0">Production-grade systems built with REST APIs, authentication, and database schemas.</p>
+            </div>
+            <a href="{% url 'project_list' %}" class="btn btn-glass d-none d-md-inline-flex align-items-center">
+                View All Projects <i class="bi bi-arrow-right ms-2"></i>
+            </a>
         </div>
 
         <div class="row g-4">
             {% for project in featured_projects %}
-            <div class="col-lg-4 col-md-6">
-                <div class="glass-card h-100 d-flex flex-column">
-                    <!-- Project Image Banner -->
-                    <div class="position-relative overflow-hidden rounded-3 mb-3" style="height:210px; background:#1e293b;">
+            <div class="col-lg-4 col-md-6 d-flex">
+                <div class="glass-card project-card h-100 d-flex flex-column p-3.5 w-100 position-relative">
+                    <!-- Featured Image / Screenshot -->
+                    <div class="project-img-wrapper mb-3 position-relative rounded-3 overflow-hidden" style="height: 180px;">
                         {% if project.featured_image %}
-                        <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="w-100 h-100 object-fit-cover">
+                        <img src="{{ project.featured_image.url }}" class="w-100 h-100 object-fit-cover project-img" alt="{{ project.title }}">
                         {% else %}
-                        <div class="w-100 h-100 d-flex align-items-center justify-content-center gradient-text fs-1 fw-bold opacity-50">
-                            <i class="bi bi-code-square"></i>
+                        <div class="project-img-placeholder w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                            <i class="bi bi-code-slash fs-1 text-primary text-opacity-50"></i>
                         </div>
                         {% endif %}
                         <span class="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 border border-success text-success">
@@ -168,15 +173,15 @@
                             <a href="{{ project.github_url }}" target="_blank" class="btn btn-glass btn-sm"><i class="bi bi-github"></i> GitHub</a>
                             {% endif %}
                         </div>
-                        <a href="{% url 'project_detail' slug=project.slug %}" class="btn btn-glass btn-sm px-2" title="Case Study"><i class="bi bi-journal-text"></i></a>
+                        <a href="{% url 'project_detail' slug=project.slug %}" class="btn btn-glass btn-sm px-2.5" title="View Full Details"><i class="bi bi-box-arrow-up-right"></i></a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
 
-        <div class="text-center mt-5">
-            <a href="{% url 'project_list' %}" class="btn btn-glass px-4">
+        <div class="text-center mt-4 d-md-none">
+            <a href="{% url 'project_list' %}" class="btn btn-glass">
                 View All Projects <i class="bi bi-arrow-right ms-2"></i>
             </a>
         </div>
@@ -252,18 +257,6 @@
             </div>
             <div class="col-6 col-md-3 col-lg-2">
                 <div class="tech-logo-card">
-                    <div class="tech-logo-icon text-danger"><i class="bi bi-hdd-stack"></i></div>
-                    <div class="tech-logo-title">Redis</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3 col-lg-2">
-                <div class="tech-logo-card">
-                    <div class="tech-logo-icon text-warning"><i class="bi bi-terminal-fill"></i></div>
-                    <div class="tech-logo-title">Linux</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3 col-lg-2">
-                <div class="tech-logo-card">
                     <div class="tech-logo-icon text-info"><i class="bi bi-code-slash"></i></div>
                     <div class="tech-logo-title">VS Code</div>
                 </div>
@@ -273,7 +266,7 @@
                     <div class="tech-logo-icon text-warning"><i class="bi bi-send-check"></i></div>
                     <div class="tech-logo-title">Postman</div>
                 </div>
-            </div>
         </div>
     </div>
+</section>
 {% endblock %}
