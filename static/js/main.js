@@ -198,34 +198,41 @@ function initCountUp() {
     const counters = document.querySelectorAll('.counter-value');
     if (counters.length === 0) return;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = entry.target;
-                const finalVal = parseInt(target.getAttribute('data-target') || '0', 10);
-                let startVal = 0;
-                const duration = 1500;
-                const startTime = performance.now();
+    const animateCounter = (target) => {
+        const finalVal = parseInt(target.getAttribute('data-target') || '0', 10);
+        if (!finalVal || finalVal <= 0) return;
+        const duration = 1200;
+        const startTime = performance.now();
 
-                function updateCount(currentTime) {
-                    const elapsed = currentTime - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    const currentVal = Math.floor(progress * finalVal);
-                    target.textContent = currentVal + (target.getAttribute('data-suffix') || '');
+        function updateCount(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const currentVal = Math.floor(progress * finalVal);
+            target.textContent = currentVal + (target.getAttribute('data-suffix') || '');
 
-                    if (progress < 1) {
-                        requestAnimationFrame(updateCount);
-                    } else {
-                        target.textContent = finalVal + (target.getAttribute('data-suffix') || '');
-                    }
-                }
+            if (progress < 1) {
                 requestAnimationFrame(updateCount);
-                observer.unobserve(target);
+            } else {
+                target.textContent = finalVal + (target.getAttribute('data-suffix') || '');
             }
-        });
-    }, { threshold: 0.5 });
+        }
+        requestAnimationFrame(updateCount);
+    };
 
-    counters.forEach(counter => observer.observe(counter));
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        counters.forEach(counter => observer.observe(counter));
+    } else {
+        counters.forEach(counter => animateCounter(counter));
+    }
 }
 
 // Contact Form AJAX Handler — Full UX with validation, loading state & feedback
