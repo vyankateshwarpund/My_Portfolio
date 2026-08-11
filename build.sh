@@ -10,3 +10,6 @@ python manage.py collectstatic --noinput
 
 echo "Running database migrations..."
 python manage.py migrate
+
+echo "Seeding and updating initial database content..."
+python seed_data.py
