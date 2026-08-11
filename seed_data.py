@@ -127,12 +127,23 @@ def run_seed():
 
     # Projects & Technologies
     cat_cms, _ = ProjectCategory.objects.get_or_create(name='Portfolio & CMS')
-    cat_api, _ = ProjectCategory.objects.get_or_create(name='REST API')
-    cat_web, _ = ProjectCategory.objects.get_or_create(name='Web Application')
+    cat_api, _ = ProjectCategory.objects.get_or_create(name='Backend & REST API')
+    cat_web, _ = ProjectCategory.objects.get_or_create(name='Full Stack Web App')
 
-    tech_names = ['Python', 'Django', 'Django REST Framework', 'MySQL', 'Docker', 'Bootstrap 5', 'JavaScript']
-    tech_objs = [Technology.objects.get_or_create(name=t, defaults={'icon_class': 'bi bi-box'})[0] for t in tech_names]
+    tech_dict = {
+        'Python': 'bi bi-filetype-py',
+        'Django': 'bi bi-box-seam',
+        'Django REST Framework': 'bi bi-cpu',
+        'MySQL': 'bi bi-database',
+        'Bootstrap 5': 'bi bi-bootstrap',
+        'JavaScript': 'bi bi-filetype-js',
+        'Docker': 'bi bi-box',
+    }
+    tech_objs = {}
+    for t_name, icon in tech_dict.items():
+        tech_objs[t_name], _ = Technology.objects.get_or_create(name=t_name, defaults={'icon_class': icon})
 
+    # Project 1: Enterprise Portfolio
     proj1, _ = Project.objects.update_or_create(
         id=3,
         defaults={
@@ -166,9 +177,77 @@ def run_seed():
             'order': 1
         }
     )
-    proj1.tech_stack.set(tech_objs)
+    proj1.tech_stack.set([tech_objs['Python'], tech_objs['Django'], tech_objs['Django REST Framework'], tech_objs['MySQL'], tech_objs['Docker'], tech_objs['Bootstrap 5'], tech_objs['JavaScript']])
 
-    print("Database successfully updated with Enterprise Portfolio project links and metrics!")
+    # Project 2: Student Management System
+    proj2, _ = Project.objects.update_or_create(
+        id=1,
+        defaults={
+            'title': 'Student Management System REST API',
+            'slug': 'student-management-system-rest-api',
+            'short_description': 'Robust API managing 500+ student records with role-based access, JWT authentication, and MySQL backend.',
+            'full_details': (
+                'High-performance RESTful API service built with Django REST Framework for educational institution record management. '
+                'Includes JWT authentication, role-based permission control (Admin, Teacher, Student), automated OpenAPI documentation, '
+                'and complex SQL queries for academic reporting.'
+            ),
+            'github_url': 'https://github.com/vyankateshwarpund',
+            'live_demo_url': 'http://localhost:8000/api/projects/',
+            'case_study_url': '',
+            'category': cat_api,
+            'status_badge': 'Production-Ready',
+            'api_calls_count': '5000+ API Calls',
+            'db_tables_count': '25+ DB Tables',
+            'apis_count': '40+ APIs',
+            'features': (
+                '• Role-based Access Control (RBAC) & JWT Authentication\n'
+                '• Filter, Search, and Pagination endpoints for student records\n'
+                '• Automated Swagger / OpenAPI documentation generation\n'
+                '• Complex relational database joins and performance optimization'
+            ),
+            'views_count': 450,
+            'likes_count': 42,
+            'is_featured': True,
+            'order': 2
+        }
+    )
+    proj2.tech_stack.set([tech_objs['Python'], tech_objs['Django'], tech_objs['Django REST Framework'], tech_objs['MySQL']])
+
+    # Project 3: E-Commerce Web Application
+    proj3, _ = Project.objects.update_or_create(
+        id=2,
+        defaults={
+            'title': 'E-Commerce Web Application',
+            'slug': 'e-commerce-web-application',
+            'short_description': 'Full-featured online shopping platform with cart management, product filter, secure checkout, and user auth.',
+            'full_details': (
+                'Comprehensive E-Commerce web application built with Python, Django, MySQL, and Bootstrap 5. '
+                'Features user authentication, dynamic product catalog, multi-attribute filtering, shopping cart persistence, '
+                'order history tracking, and interactive checkout interface.'
+            ),
+            'github_url': 'https://github.com/vyankateshwarpund',
+            'live_demo_url': 'http://localhost:8000/projects/',
+            'case_study_url': '',
+            'category': cat_web,
+            'status_badge': 'Production-Ready',
+            'api_calls_count': '5000+ API Calls',
+            'db_tables_count': '25+ DB Tables',
+            'apis_count': '40+ APIs',
+            'features': (
+                '• Dynamic Product Catalog & Real-time Search Filtering\n'
+                '• Session-persistent Shopping Cart & Order Tracking\n'
+                '• Customer Account Dashboard & Purchase History\n'
+                '• Fully Responsive Glassmorphic UI layout'
+            ),
+            'views_count': 620,
+            'likes_count': 58,
+            'is_featured': True,
+            'order': 3
+        }
+    )
+    proj3.tech_stack.set([tech_objs['Python'], tech_objs['Django'], tech_objs['MySQL'], tech_objs['Bootstrap 5'], tech_objs['JavaScript']])
+
+    print("Database successfully seeded with all 3 projects, technologies, and metrics!")
 
 if __name__ == '__main__':
     run_seed()
