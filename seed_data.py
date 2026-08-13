@@ -155,6 +155,7 @@ def run_seed():
                 'Includes an interactive Recruiter Analytics Dashboard, PWA support, GitHub API stats integration, '
                 'visitor IP tracking middleware, dynamic blog engine with Markdown support, and downloadable resume tracker.'
             ),
+            'featured_image': 'projects/My_Portfolio.png',
             'github_url': 'https://github.com/vyankateshwarpund/My_Portfolio',
             'live_demo_url': 'http://localhost:8000/',
             'case_study_url': '',
@@ -179,10 +180,81 @@ def run_seed():
     )
     proj1.tech_stack.set([tech_objs['Python'], tech_objs['Django'], tech_objs['Django REST Framework'], tech_objs['MySQL'], tech_objs['Docker'], tech_objs['Bootstrap 5'], tech_objs['JavaScript']])
 
-    # Remove all other projects except Enterprise Software Engineer Portfolio
-    Project.objects.exclude(id=3).delete()
+    # Project 2: SPCart E-Commerce Platform
+    proj2, _ = Project.objects.update_or_create(
+        id=7,
+        defaults={
+            'title': 'SPCart - Full Stack E-Commerce Platform',
+            'slug': 'spcart-ecommerce-platform',
+            'short_description': 'A production-ready Django e-commerce platform with Razorpay payment gateway, OTP-based email verification, shopping cart, wishlist, order management, brand & category filtering, and custom admin dashboard.',
+            'full_details': (
+                'Full Stack E-Commerce platform built using Python, Django, MySQL, and Bootstrap 5. '
+                'Features Razorpay integration, OTP email authentication, user cart & wishlist persistence, '
+                'order tracking, coupon codes, and real-time inventory management.'
+            ),
+            'featured_image': 'projects/screenshots/Screenshot_2026-08-12_134048.png',
+            'github_url': 'https://github.com/vyankateshwarpund',
+            'live_demo_url': 'http://localhost:8000/projects/',
+            'case_study_url': '',
+            'category': cat_web,
+            'status_badge': 'Production-Ready',
+            'api_calls_count': '40+ API Calls',
+            'db_tables_count': '20+ DB Tables',
+            'apis_count': '40+ APIs',
+            'features': (
+                '• User Registration with Email OTP Verification\n'
+                '• Login / Logout with Session Management\n'
+                '• Razorpay Payment Gateway Integration\n'
+                '• Product Catalog with Category & Brand Filters\n'
+                '• Cart, Wishlist & Order History Dashboard'
+            ),
+            'views_count': 420,
+            'likes_count': 45,
+            'is_featured': True,
+            'order': 2
+        }
+    )
+    proj2.tech_stack.set([tech_objs['Python'], tech_objs['Django'], tech_objs['MySQL'], tech_objs['Bootstrap 5'], tech_objs['JavaScript']])
 
-    print("Database successfully updated with Enterprise Portfolio project!")
+    # Project 3: TechNova Technology Solutions
+    proj3, _ = Project.objects.update_or_create(
+        id=6,
+        defaults={
+            'title': 'TechNova - Technology Solutions Website',
+            'slug': 'technova-technology-solutions-website',
+            'short_description': 'A responsive business website designed for a technology company to showcase its digital services, pricing plans, team, company information, FAQs, and contact details using HTML5, CSS, Bootstrap 5, and Font Awesome.',
+            'full_details': (
+                'Modern corporate landing platform designed for technology & digital solutions providers. '
+                'Includes interactive pricing cards, team showcase, service offerings, client testimonials, '
+                'and AJAX contact inquiry forms.'
+            ),
+            'featured_image': 'projects/screenshots/Screenshot_2026-08-13_180734.png',
+            'github_url': 'https://github.com/vyankateshwarpund',
+            'live_demo_url': 'http://localhost:8000/projects/',
+            'case_study_url': '',
+            'category': cat_web,
+            'status_badge': 'Production-Ready',
+            'api_calls_count': '10+ API Calls',
+            'db_tables_count': '5+ DB Tables',
+            'apis_count': '10+ APIs',
+            'features': (
+                '• Modern Glassmorphic Corporate Layout\n'
+                '• Interactive Service & Pricing Plans Grid\n'
+                '• Team Showcase & Client Testimonials Section\n'
+                '• Responsive Design across Mobile, Tablet & Desktop'
+            ),
+            'views_count': 280,
+            'likes_count': 32,
+            'is_featured': True,
+            'order': 3
+        }
+    )
+    proj3.tech_stack.set([tech_objs['Bootstrap 5'], tech_objs['JavaScript']])
+
+    # Clean up any leftover duplicate projects
+    Project.objects.exclude(id__in=[3, 6, 7]).delete()
+
+    print("Database successfully seeded with all 3 projects and image assets!")
 
 if __name__ == '__main__':
     run_seed()
